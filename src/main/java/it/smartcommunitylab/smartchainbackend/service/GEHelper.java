@@ -1,5 +1,6 @@
 package it.smartcommunitylab.smartchainbackend.service;
 
+import java.util.Date;
 import java.util.HashMap;
 
 import javax.annotation.PostConstruct;
@@ -59,6 +60,8 @@ public class GEHelper {
         executionData.setGameId(action.getGameId());
         executionData.setData(action.getParams());
         executionData.setPlayerId(playerId);
+        // fix issue in gamification sdk v2.0.1
+        executionData.setExecutionMoment(new Date());
         try {
             new ExecutionControllerApi(apiClient).executeActionUsingPOST(action.getGameId(),
                     action.getName(), executionData);
