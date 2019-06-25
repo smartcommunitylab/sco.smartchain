@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import it.smartcommunitylab.smartchainbackend.bean.Action;
+import it.smartcommunitylab.smartchainbackend.bean.Experience;
 import it.smartcommunitylab.smartchainbackend.bean.Player;
 
 @Service
@@ -40,5 +41,22 @@ public class PlayerManager {
         gamificationAction.setParams(action.getParams());
 
         gamificationEngineHelper.action(playerId, gamificationAction);
+    }
+
+    public void playExperience(String playerId, Experience exp) {
+        final String gameModelId = exp.getGameId();
+        boolean isSubscribed = gameModelManager.isSubscribed(playerId, gameModelId);
+        if (!isSubscribed) {
+            throw new IllegalArgumentException(
+                    String.format("%s is not subscribed to game %s", playerId, gameModelId));
+        }
+
+        final String gamificationId = gameModelManager.getGamificationId(gameModelId);
+        Experience gamificationExperience = new Experience();
+        gamificationExperience.setGameId(gamificationId);
+        gamificationExperience.setName(exp.getName());
+
+        gamificationEngineHelper.experience(playerId, gamificationExperience);
+
     }
 }

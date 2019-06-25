@@ -17,16 +17,19 @@ import it.smartcommunitylab.basic.api.PlayerControllerApi;
 import it.smartcommunitylab.model.PlayerStateDTO;
 import it.smartcommunitylab.model.ext.ExecutionDataDTO;
 import it.smartcommunitylab.smartchainbackend.bean.Action;
+import it.smartcommunitylab.smartchainbackend.bean.Experience;
 import it.smartcommunitylab.smartchainbackend.bean.Player;
 import it.smartcommunitylab.smartchainbackend.config.GEProps;
 
 @Component
 public class GEHelper {
 
+
+
     private static final Logger logger = LogManager.getLogger(GEHelper.class);
 
-
-    private final String componentsCustomField = "components";
+    private static final String componentsCustomField = "components";
+    private static final String experienceAction = "experience";
 
     @Autowired
     private GEProps gamificationEngineProps;
@@ -71,6 +74,19 @@ public class GEHelper {
         }
     }
 
+    public void experience(String playerId, Experience exp) {
+        action(playerId, convert(exp));
+    }
+
+    private Action convert(Experience exp) {
+        Action action = new Action();
+        action.setGameId(exp.getGameId());
+        action.setName(experienceAction);
+        action.setParams(new HashMap<>());
+        action.getParams().put("name", exp.getName());
+
+        return action;
+    }
     
     public static class GEHelperException extends RuntimeException {
 
@@ -93,4 +109,7 @@ public class GEHelper {
         }
         
     }
+
+
+
 }

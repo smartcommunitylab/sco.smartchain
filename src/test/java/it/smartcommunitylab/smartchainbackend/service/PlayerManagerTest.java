@@ -9,6 +9,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import it.smartcommunitylab.smartchainbackend.bean.Action;
+import it.smartcommunitylab.smartchainbackend.bean.Experience;
 import it.smartcommunitylab.smartchainbackend.bean.Player;
 import it.smartcommunitylab.smartchainbackend.model.GameModel;
 
@@ -75,5 +76,15 @@ public class PlayerManagerTest {
 
     // player not subscribed to game
 
+    @Test
+    public void play_experience() {
+        GameModel game = new GameModel();
+        game.setId("game");
+        game.setGamificationId("5d020a44e22362287f1677e0");
+        game.setName("game");
+        gameModelManager.saveGameModel(game);
 
+        Experience exp = new Experience("game", "forra-del-lupo");
+        playerManager.playExperience("faso", exp);
+    }
 }
