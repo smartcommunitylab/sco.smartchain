@@ -11,8 +11,11 @@ import org.springframework.stereotype.Component;
 
 import it.smartcommunitylab.ApiClient;
 import it.smartcommunitylab.ApiException;
+import it.smartcommunitylab.basic.api.ExecutionControllerApi;
 import it.smartcommunitylab.basic.api.PlayerControllerApi;
 import it.smartcommunitylab.model.PlayerStateDTO;
+import it.smartcommunitylab.model.ext.ExecutionDataDTO;
+import it.smartcommunitylab.smartchainbackend.bean.Action;
 import it.smartcommunitylab.smartchainbackend.bean.Player;
 import it.smartcommunitylab.smartchainbackend.config.GEProps;
 
@@ -44,6 +47,21 @@ public class GEHelper {
             new PlayerControllerApi(apiClient).createPlayerUsingPOST1(
                     subscriber.getGameId(),
                     playerState);
+        } catch (ApiException e) {
+            logger.error("Exception calling gamification-engine API");
+            throw new GEHelperException(e);
+        }
+    }
+
+
+    public void action(String playerId, Action action) {
+        ExecutionDataDTO executionData = new ExecutionDataDTO();
+        executionData.setGameId(action.getGameId());
+        executionData.setData(action.getParams());
+        executionData.setPlayerId(playerId);
+        try {
+            new ExecutionControllerApi(apiClient).executeActionUsingPOST(action.getGameId(),
+                    action.getName(), executionData);
         } catch (ApiException e) {
             logger.error("Exception calling gamification-engine API");
             throw new GEHelperException(e);
