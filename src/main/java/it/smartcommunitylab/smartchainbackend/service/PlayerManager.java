@@ -5,7 +5,9 @@ import org.springframework.stereotype.Service;
 
 import it.smartcommunitylab.smartchainbackend.bean.Action;
 import it.smartcommunitylab.smartchainbackend.bean.Experience;
+import it.smartcommunitylab.smartchainbackend.bean.PersonageDTO;
 import it.smartcommunitylab.smartchainbackend.bean.Player;
+import it.smartcommunitylab.smartchainbackend.model.Cost;
 
 @Service
 public class PlayerManager {
@@ -59,4 +61,25 @@ public class PlayerManager {
         gamificationEngineHelper.experience(playerId, gamificationExperience);
 
     }
+
+    public void consumePersonage(String playerId, PersonageDTO personage) {
+        final String gameModelId = personage.getGameId();
+        boolean isSubscribed = gameModelManager.isSubscribed(playerId, gameModelId);
+        if (!isSubscribed) {
+            throw new IllegalArgumentException(
+                    String.format("%s is not subscribed to game %s", playerId, gameModelId));
+        }
+
+        final String gamificationId = gameModelManager.getGamificationId(gameModelId);
+
+        Cost personageCost = gameModelManager.getPersonageCost(personage);
+
+        GamificationPersonage gamificationPersonage =
+                new GamificationPersonage(gamificationId, personage, personageCost);
+
+        gamificationEngineHelper.consumePersonage(playerId, gamificationPersonage);
+
+    }
+
+
 }

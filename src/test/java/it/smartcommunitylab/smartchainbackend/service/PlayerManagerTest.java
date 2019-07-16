@@ -10,8 +10,11 @@ import org.springframework.test.context.junit4.SpringRunner;
 
 import it.smartcommunitylab.smartchainbackend.bean.Action;
 import it.smartcommunitylab.smartchainbackend.bean.Experience;
+import it.smartcommunitylab.smartchainbackend.bean.PersonageDTO;
 import it.smartcommunitylab.smartchainbackend.bean.Player;
+import it.smartcommunitylab.smartchainbackend.model.Cost;
 import it.smartcommunitylab.smartchainbackend.model.GameModel;
+import it.smartcommunitylab.smartchainbackend.model.GameModel.Personage;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
@@ -86,5 +89,29 @@ public class PlayerManagerTest {
 
         Experience exp = new Experience("game", "forra-del-lupo");
         playerManager.playExperience("faso", exp);
+    }
+
+    @Test
+    public void consume_character() {
+        GameModel game = new GameModel();
+        game.setId("game");
+        game.setGamificationId("5d020a44e22362287f1677e0");
+        game.setName("game");
+        
+        Personage basilisco = new Personage();
+        basilisco.setName("basilisco");
+        Cost basiliscoCost = new Cost();
+        basiliscoCost.setTerritoryScore(10d);
+        basiliscoCost.setCultureScore(5d);
+        basiliscoCost.setSportScore(3d);
+        basilisco.setCost(basiliscoCost);
+        
+        game.getPersonages().add(basilisco);
+        gameModelManager.saveGameModel(game);
+
+        PersonageDTO character = new PersonageDTO();
+        character.setGameId("game");
+        character.setName("basilisco");
+        playerManager.consumePersonage("faso", character);
     }
 }

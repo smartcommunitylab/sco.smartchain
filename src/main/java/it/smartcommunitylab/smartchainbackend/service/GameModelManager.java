@@ -9,7 +9,9 @@ import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import it.smartcommunitylab.smartchainbackend.bean.PersonageDTO;
 import it.smartcommunitylab.smartchainbackend.bean.Player;
+import it.smartcommunitylab.smartchainbackend.model.Cost;
 import it.smartcommunitylab.smartchainbackend.model.GameModel;
 import it.smartcommunitylab.smartchainbackend.model.Subscription;
 import it.smartcommunitylab.smartchainbackend.model.Subscription.CompositeKey;
@@ -99,5 +101,23 @@ public class GameModelManager {
         Optional<GameModel> gameModel = gameModelRepo.findById(gameModelId);
         return gameModel.map(gm -> gm.getGamificationId())
                 .orElseThrow(() -> new IllegalArgumentException("gameModel not exist"));
+    }
+
+    public Cost getPersonageCost(PersonageDTO personage) {
+        final String gameModelId = personage.getGameId();
+        Optional<GameModel> gameModel = gameModelRepo.findById(gameModelId);
+        if (gameModel.isPresent()) {
+            Optional<it.smartcommunitylab.smartchainbackend.model.GameModel.Personage> optPersonage =
+                    gameModel.get().getPersonages().stream()
+                    .filter(p -> p.getName().equals(personage.getName())).findFirst();
+            return optPersonage.map(p -> p.getCost())
+                    .orElseThrow(() -> new IllegalArgumentException(
+                        String.format("personage %s not exist in gameModel %s", personage.getName(),
+                                gameModel.get().getName())));
+        } else {
+            throw new IllegalArgumentException("gameModel not exist");
+        }
+
+
     }
 }

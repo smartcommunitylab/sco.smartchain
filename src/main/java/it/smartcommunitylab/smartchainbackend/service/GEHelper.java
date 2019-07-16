@@ -29,7 +29,9 @@ public class GEHelper {
     private static final Logger logger = LogManager.getLogger(GEHelper.class);
 
     private static final String componentsCustomField = "components";
+
     private static final String experienceAction = "experience";
+    private static final String consumePersonageAction = "consume-character";
 
     @Autowired
     private GEProps gamificationEngineProps;
@@ -42,6 +44,7 @@ public class GEHelper {
         apiClient.setUsername(gamificationEngineProps.getUsername());
         apiClient.setPassword(gamificationEngineProps.getPassword());
     }
+
     public void subscribe(Player subscriber) {
         PlayerStateDTO playerState = new PlayerStateDTO();
         playerState.setPlayerId(subscriber.getPlayerId());
@@ -78,6 +81,23 @@ public class GEHelper {
         action(playerId, convert(exp));
     }
 
+    public void consumePersonage(String playerId, GamificationPersonage personage) {
+        action(playerId, convert(personage));
+    }
+
+    private Action convert(GamificationPersonage personage) {
+        Action action = new Action();
+        action.setGameId(personage.getGameId());
+        action.setName(consumePersonageAction);
+        action.setParams(new HashMap<>());
+        action.getParams().put("character", personage.getName());
+        action.getParams().put("territory", personage.getTerritoryScore());
+        action.getParams().put("culture", personage.getCultureScore());
+        action.getParams().put("sport", personage.getSportScore());
+
+        return action;
+    }
+
     private Action convert(Experience exp) {
         Action action = new Action();
         action.setGameId(exp.getGameId());
@@ -88,6 +108,7 @@ public class GEHelper {
         return action;
     }
     
+
     public static class GEHelperException extends RuntimeException {
 
         private static final long serialVersionUID = 4317283112971157529L;
