@@ -13,6 +13,7 @@ import it.smartcommunitylab.smartchainbackend.bean.PersonageDTO;
 import it.smartcommunitylab.smartchainbackend.bean.Player;
 import it.smartcommunitylab.smartchainbackend.model.Cost;
 import it.smartcommunitylab.smartchainbackend.model.GameModel;
+import it.smartcommunitylab.smartchainbackend.model.GameModel.Personage;
 import it.smartcommunitylab.smartchainbackend.model.Subscription;
 import it.smartcommunitylab.smartchainbackend.model.Subscription.CompositeKey;
 import it.smartcommunitylab.smartchainbackend.repository.GameModelRepository;
@@ -107,7 +108,7 @@ public class GameModelManager {
         final String gameModelId = personage.getGameId();
         Optional<GameModel> gameModel = gameModelRepo.findById(gameModelId);
         if (gameModel.isPresent()) {
-            Optional<it.smartcommunitylab.smartchainbackend.model.GameModel.Personage> optPersonage =
+            Optional<Personage> optPersonage =
                     gameModel.get().getPersonages().stream()
                     .filter(p -> p.getName().equals(personage.getName())).findFirst();
             return optPersonage.map(p -> p.getCost())
