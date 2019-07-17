@@ -32,6 +32,7 @@ public class GEHelper {
 
     private static final String experienceAction = "experience";
     private static final String consumePersonageAction = "consume-character";
+    private static final String consumeRewardAction = "consume-reward";
 
     @Autowired
     private GEProps gamificationEngineProps;
@@ -85,6 +86,23 @@ public class GEHelper {
         action(playerId, convert(personage));
     }
 
+    public void consumeReward(String playerId, GamificationReward reward) {
+        action(playerId, convert(reward));
+
+    }
+
+    private Action convert(GamificationReward reward) {
+        Action action = new Action();
+        action.setGameId(reward.getGameId());
+        action.setName(consumeRewardAction);
+        action.setParams(new HashMap<>());
+        action.getParams().put("territory", reward.getTerritoryScore());
+        action.getParams().put("culture", reward.getCultureScore());
+        action.getParams().put("sport", reward.getSportScore());
+
+        return action;
+    }
+
     private Action convert(GamificationPersonage personage) {
         Action action = new Action();
         action.setGameId(personage.getGameId());
@@ -130,7 +148,5 @@ public class GEHelper {
         }
         
     }
-
-
 
 }

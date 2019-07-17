@@ -12,7 +12,30 @@ public class GameModel {
     // ?? private String gameContractId;
 
     private List<Personage> personages = new ArrayList<>();
+    private List<GameReward> rewards = new ArrayList<>();
 
+    public static class GameReward {
+        private String name;
+        private Cost cost;
+
+        public String getName() {
+            return name;
+        }
+
+        public void setName(String name) {
+            this.name = name;
+        }
+
+        public Cost getCost() {
+            return cost;
+        }
+
+        public void setCost(Cost cost) {
+            this.cost = cost;
+        }
+
+
+    }
 
     public static class Personage {
         private String name;
@@ -87,6 +110,14 @@ public class GameModel {
 
     public void setPersonages(List<Personage> personages) {
         this.personages = personages;
+    }
+
+    public List<GameReward> getRewards() {
+        return rewards;
+    }
+
+    public void setRewards(List<GameReward> rewards) {
+        this.rewards = rewards;
     }
 
 

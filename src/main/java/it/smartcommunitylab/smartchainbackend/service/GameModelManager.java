@@ -9,10 +9,12 @@ import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import it.smartcommunitylab.smartchainbackend.bean.GameRewardDTO;
 import it.smartcommunitylab.smartchainbackend.bean.PersonageDTO;
 import it.smartcommunitylab.smartchainbackend.bean.Player;
 import it.smartcommunitylab.smartchainbackend.model.Cost;
 import it.smartcommunitylab.smartchainbackend.model.GameModel;
+import it.smartcommunitylab.smartchainbackend.model.GameModel.GameReward;
 import it.smartcommunitylab.smartchainbackend.model.GameModel.Personage;
 import it.smartcommunitylab.smartchainbackend.model.Subscription;
 import it.smartcommunitylab.smartchainbackend.model.Subscription.CompositeKey;
@@ -120,5 +122,20 @@ public class GameModelManager {
         }
 
 
+    }
+
+    public Cost getRewardCost(GameRewardDTO reward) {
+        final String gameModelId = reward.getGameId();
+        Optional<GameModel> gameModel = gameModelRepo.findById(gameModelId);
+        if (gameModel.isPresent()) {
+            Optional<GameReward> optReward = gameModel.get().getRewards().stream()
+                    .filter(p -> p.getName().equals(reward.getName())).findFirst();
+            return optReward.map(p -> p.getCost())
+                    .orElseThrow(() -> new IllegalArgumentException(
+                            String.format("reward %s not exist in gameModel %s", reward.getName(),
+                                    gameModel.get().getName())));
+        } else {
+            throw new IllegalArgumentException("gameModel not exist");
+        }
     }
 }

@@ -10,10 +10,12 @@ import org.springframework.test.context.junit4.SpringRunner;
 
 import it.smartcommunitylab.smartchainbackend.bean.Action;
 import it.smartcommunitylab.smartchainbackend.bean.Experience;
+import it.smartcommunitylab.smartchainbackend.bean.GameRewardDTO;
 import it.smartcommunitylab.smartchainbackend.bean.PersonageDTO;
 import it.smartcommunitylab.smartchainbackend.bean.Player;
 import it.smartcommunitylab.smartchainbackend.model.Cost;
 import it.smartcommunitylab.smartchainbackend.model.GameModel;
+import it.smartcommunitylab.smartchainbackend.model.GameModel.GameReward;
 import it.smartcommunitylab.smartchainbackend.model.GameModel.Personage;
 
 @RunWith(SpringRunner.class)
@@ -113,5 +115,32 @@ public class PlayerManagerTest {
         character.setGameId("game");
         character.setName("basilisco");
         playerManager.consumePersonage("faso", character);
+    }
+
+
+    @Test
+    public void consume_reward() {
+        GameModel game = new GameModel();
+        game.setId("game");
+        game.setGamificationId("5d020a44e22362287f1677e0");
+        game.setName("game");
+
+        GameReward reward =
+                new GameReward();
+        reward.setName("my-reward");
+        Cost cost = new Cost();
+        cost.setTerritoryScore(10d);
+        cost.setCultureScore(5d);
+        cost.setSportScore(3d);
+        reward.setCost(cost);
+
+        game.getRewards().add(reward);
+        gameModelManager.saveGameModel(game);
+        
+        GameRewardDTO rewardDTO = new GameRewardDTO();
+        rewardDTO.setGameId("game");
+        rewardDTO.setName("my-reward");
+        playerManager.consumeReward("faso", rewardDTO);
+
     }
 }
