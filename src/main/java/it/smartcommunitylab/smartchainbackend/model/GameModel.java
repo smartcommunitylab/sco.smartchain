@@ -12,9 +12,56 @@ public class GameModel {
     // ?? private String gameContractId;
 
     private List<Personage> personages = new ArrayList<>();
-    private List<GameReward> rewards = new ArrayList<>();
+    private List<ModelReward> rewards = new ArrayList<>();
+    private List<ModelAction> actions = new ArrayList<>();
+    private List<ModelExperience> experiences = new ArrayList<>();
 
-    public static class GameReward {
+
+    public static class ModelExperience {
+        private String name;
+        private String description;
+
+        public String getName() {
+            return name;
+        }
+
+        public void setName(String name) {
+            this.name = name;
+        }
+
+        public String getDescription() {
+            return description;
+        }
+
+        public void setDescription(String description) {
+            this.description = description;
+        }
+
+    }
+
+    public static class ModelAction {
+        private String name;
+        private String description;
+
+        public String getName() {
+            return name;
+        }
+
+        public void setName(String name) {
+            this.name = name;
+        }
+
+        public String getDescription() {
+            return description;
+        }
+
+        public void setDescription(String description) {
+            this.description = description;
+        }
+    }
+
+
+    public static class ModelReward {
         private String name;
         private Cost cost;
 
@@ -112,12 +159,28 @@ public class GameModel {
         this.personages = personages;
     }
 
-    public List<GameReward> getRewards() {
+    public List<ModelReward> getRewards() {
         return rewards;
     }
 
-    public void setRewards(List<GameReward> rewards) {
+    public void setRewards(List<ModelReward> rewards) {
         this.rewards = rewards;
+    }
+
+    public List<ModelAction> getActions() {
+        return actions;
+    }
+
+    public void setActions(List<ModelAction> actions) {
+        this.actions = actions;
+    }
+
+    public List<ModelExperience> getExperiences() {
+        return experiences;
+    }
+
+    public void setExperiences(List<ModelExperience> experiences) {
+        this.experiences = experiences;
     }
 
 

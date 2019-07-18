@@ -14,7 +14,9 @@ import it.smartcommunitylab.smartchainbackend.bean.PersonageDTO;
 import it.smartcommunitylab.smartchainbackend.bean.Player;
 import it.smartcommunitylab.smartchainbackend.model.Cost;
 import it.smartcommunitylab.smartchainbackend.model.GameModel;
-import it.smartcommunitylab.smartchainbackend.model.GameModel.GameReward;
+import it.smartcommunitylab.smartchainbackend.model.GameModel.ModelReward;
+import it.smartcommunitylab.smartchainbackend.model.GameModel.ModelAction;
+import it.smartcommunitylab.smartchainbackend.model.GameModel.ModelExperience;
 import it.smartcommunitylab.smartchainbackend.model.GameModel.Personage;
 import it.smartcommunitylab.smartchainbackend.model.Subscription;
 import it.smartcommunitylab.smartchainbackend.model.Subscription.CompositeKey;
@@ -96,46 +98,58 @@ public class GameModelManager {
 
     }
 
+    public List<ModelExperience> getExperiences(String gameModelId) {
+        return getModel(gameModelId).getExperiences();
+    }
+
+    public List<ModelAction> getActions(String gameModelId) {
+        return getModel(gameModelId).getActions();
+    }
+
+    public List<ModelReward> getRewards(String gameModelId) {
+        return getModel(gameModelId).getRewards();
+    }
+
+
+    public List<Personage> getPersonages(String gameModelId) {
+        return getModel(gameModelId).getPersonages();
+    }
+
+    private GameModel getModel(String gameModelId) {
+        Optional<GameModel> gameModel = gameModelRepo.findById(gameModelId);
+        if (gameModel.isPresent()) {
+            return gameModel.get();
+        } else {
+            throw new IllegalArgumentException("gameModel not exist");
+        }
+    }
+
     public boolean isSubscribed(String playerId, String gameModelId) {
         return subscriptionRepo.findById(new CompositeKey(gameModelId, playerId)).isPresent();
     }
 
     public String getGamificationId(String gameModelId) {
-        Optional<GameModel> gameModel = gameModelRepo.findById(gameModelId);
-        return gameModel.map(gm -> gm.getGamificationId())
-                .orElseThrow(() -> new IllegalArgumentException("gameModel not exist"));
+        return getModel(gameModelId).getGamificationId();
     }
 
     public Cost getPersonageCost(PersonageDTO personage) {
         final String gameModelId = personage.getGameId();
-        Optional<GameModel> gameModel = gameModelRepo.findById(gameModelId);
-        if (gameModel.isPresent()) {
-            Optional<Personage> optPersonage =
-                    gameModel.get().getPersonages().stream()
-                    .filter(p -> p.getName().equals(personage.getName())).findFirst();
-            return optPersonage.map(p -> p.getCost())
-                    .orElseThrow(() -> new IllegalArgumentException(
+        GameModel model = getModel(gameModelId);
+        Optional<Personage> optPersonage = model.getPersonages().stream()
+                .filter(p -> p.getName().equals(personage.getName())).findFirst();
+        return optPersonage.map(p -> p.getCost())
+                .orElseThrow(() -> new IllegalArgumentException(
                         String.format("personage %s not exist in gameModel %s", personage.getName(),
-                                gameModel.get().getName())));
-        } else {
-            throw new IllegalArgumentException("gameModel not exist");
-        }
-
-
+                                model.getName())));
     }
+
 
     public Cost getRewardCost(GameRewardDTO reward) {
         final String gameModelId = reward.getGameId();
-        Optional<GameModel> gameModel = gameModelRepo.findById(gameModelId);
-        if (gameModel.isPresent()) {
-            Optional<GameReward> optReward = gameModel.get().getRewards().stream()
-                    .filter(p -> p.getName().equals(reward.getName())).findFirst();
-            return optReward.map(p -> p.getCost())
-                    .orElseThrow(() -> new IllegalArgumentException(
-                            String.format("reward %s not exist in gameModel %s", reward.getName(),
-                                    gameModel.get().getName())));
-        } else {
-            throw new IllegalArgumentException("gameModel not exist");
-        }
+        GameModel model = getModel(gameModelId);
+        Optional<ModelReward> optReward = model.getRewards().stream()
+                .filter(p -> p.getName().equals(reward.getName())).findFirst();
+        return optReward.map(p -> p.getCost()).orElseThrow(() -> new IllegalArgumentException(String
+                .format("reward %s not exist in gameModel %s", reward.getName(), model.getName())));
     }
 }

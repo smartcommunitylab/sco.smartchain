@@ -15,7 +15,7 @@ import it.smartcommunitylab.smartchainbackend.bean.PersonageDTO;
 import it.smartcommunitylab.smartchainbackend.bean.Player;
 import it.smartcommunitylab.smartchainbackend.model.Cost;
 import it.smartcommunitylab.smartchainbackend.model.GameModel;
-import it.smartcommunitylab.smartchainbackend.model.GameModel.GameReward;
+import it.smartcommunitylab.smartchainbackend.model.GameModel.ModelReward;
 import it.smartcommunitylab.smartchainbackend.model.GameModel.Personage;
 
 @RunWith(SpringRunner.class)
@@ -125,8 +125,8 @@ public class PlayerManagerTest {
         game.setGamificationId("5d020a44e22362287f1677e0");
         game.setName("game");
 
-        GameReward reward =
-                new GameReward();
+        ModelReward reward =
+                new ModelReward();
         reward.setName("my-reward");
         Cost cost = new Cost();
         cost.setTerritoryScore(10d);
