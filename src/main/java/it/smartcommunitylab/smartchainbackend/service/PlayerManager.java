@@ -10,7 +10,6 @@ import it.smartcommunitylab.smartchainbackend.bean.Action;
 import it.smartcommunitylab.smartchainbackend.bean.Experience;
 import it.smartcommunitylab.smartchainbackend.bean.GameRewardDTO;
 import it.smartcommunitylab.smartchainbackend.bean.PersonageDTO;
-import it.smartcommunitylab.smartchainbackend.bean.Player;
 import it.smartcommunitylab.smartchainbackend.model.Cost;
 import it.smartcommunitylab.smartchainbackend.model.GameModel.ModelReward;
 import it.smartcommunitylab.smartchainbackend.model.GameModel.Personage;
@@ -25,17 +24,20 @@ public class PlayerManager {
     @Autowired
     private GameModelManager gameModelManager;
 
-    public void subscribe(Player subscriber) {
-
-        Validator.throwIfInvalid(subscriber.getGameId(), "gameId in subscriber cannot be blank");
-        Validator.throwIfInvalid(subscriber.getPlayerId(),
-                "playerId in subscriber cannot be blank");
-
-        final String gamificationId = gameModelManager.getGamificationId(subscriber.getGameId());
-        subscriber.setGameId(gamificationId);
-        // subscribe
-        gamificationEngineHelper.subscribe(subscriber);
-    }
+    // public void subscribe(Player subscriber) {
+    //
+    // Validator.throwIfInvalid(subscriber.getGameId(), "gameId in subscriber cannot be blank");
+    // Validator.throwIfInvalid(subscriber.getPlayerId(),
+    // "playerId in subscriber cannot be blank");
+    //
+    // final String gamificationId = gameModelManager.getGamificationId(subscriber.getGameId());
+    // subscriber.setGameId(gamificationId);
+    // // subscribe
+    // gamificationEngineHelper.subscribe(subscriber);
+    //
+    // // save the subscription
+    //
+    // }
 
     public void playAction(String playerId, Action action) {
         final String gameModelId = action.getGameId();

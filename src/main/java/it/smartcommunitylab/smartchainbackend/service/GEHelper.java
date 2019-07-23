@@ -58,6 +58,7 @@ public class GEHelper {
     public void subscribe(Player subscriber) {
         PlayerStateDTO playerState = new PlayerStateDTO();
         playerState.setPlayerId(subscriber.getPlayerId());
+        playerState.setGameId(subscriber.getGameId());
         playerState.setCustomData(new HashMap<>());
         playerState.getCustomData().put(componentsCustomField, subscriber.getComponents());
         try {

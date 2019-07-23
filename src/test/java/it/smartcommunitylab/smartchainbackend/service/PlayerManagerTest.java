@@ -49,14 +49,14 @@ public class PlayerManagerTest {
         mongo.getDb().drop();
     }
 
-    @Test
-    public void subscribe_player() {
-        Player subscriber = new Player();
-        subscriber.setGameId("GAME_ID");
-        subscriber.setPlayerId("PLAYER_ID");
-
-        playerManager.subscribe(subscriber);
-    }
+    // @Test
+    // public void subscribe_player() {
+    // Player subscriber = new Player();
+    // subscriber.setGameId("GAME_ID");
+    // subscriber.setPlayerId("PLAYER_ID");
+    //
+    // playerManager.subscribe(subscriber);
+    // }
 
     @Test
     public void play_action() {

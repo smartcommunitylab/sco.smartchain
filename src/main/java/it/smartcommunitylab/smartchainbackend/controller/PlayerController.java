@@ -13,6 +13,7 @@ import it.smartcommunitylab.smartchainbackend.bean.GameRewardDTO;
 import it.smartcommunitylab.smartchainbackend.bean.PersonageDTO;
 import it.smartcommunitylab.smartchainbackend.bean.Player;
 import it.smartcommunitylab.smartchainbackend.model.PlayerProfile;
+import it.smartcommunitylab.smartchainbackend.service.GameModelManager;
 import it.smartcommunitylab.smartchainbackend.service.PlayerManager;
 
 @RestController
@@ -21,9 +22,12 @@ public class PlayerController {
     @Autowired
     private PlayerManager playerManager;
 
+    @Autowired
+    private GameModelManager gameModelManager;
+
     @PostMapping(value = "/api/subscribe")
     public void subscribe(@RequestBody Player subscriber) {
-        playerManager.subscribe(subscriber);
+        gameModelManager.subscribe(subscriber);
     }
 
     @GetMapping("api/profile/{gameModelId}/{playerId}")
