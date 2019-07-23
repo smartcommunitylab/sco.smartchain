@@ -1,7 +1,9 @@
 package it.smartcommunitylab.smartchainbackend.service;
 
+import java.io.IOException;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Set;
 
 import javax.annotation.PostConstruct;
 
@@ -16,10 +18,13 @@ import it.smartcommunitylab.basic.api.ExecutionControllerApi;
 import it.smartcommunitylab.basic.api.PlayerControllerApi;
 import it.smartcommunitylab.model.PlayerStateDTO;
 import it.smartcommunitylab.model.ext.ExecutionDataDTO;
+import it.smartcommunitylab.model.ext.GameConcept;
+import it.smartcommunitylab.model.ext.PointConcept;
 import it.smartcommunitylab.smartchainbackend.bean.Action;
 import it.smartcommunitylab.smartchainbackend.bean.Experience;
 import it.smartcommunitylab.smartchainbackend.bean.Player;
 import it.smartcommunitylab.smartchainbackend.config.GEProps;
+import it.smartcommunitylab.smartchainbackend.model.PlayerProfile;
 
 @Component
 public class GEHelper {
@@ -33,6 +38,10 @@ public class GEHelper {
     private static final String experienceAction = "experience";
     private static final String consumePersonageAction = "consume-character";
     private static final String consumeRewardAction = "consume-reward";
+
+    private static final String territoryScoreName = "total_territory";
+    private static final String cultureScoreName = "total_culture";
+    private static final String sportScoreName = "total_sport";
 
     @Autowired
     private GEProps gamificationEngineProps;
@@ -61,6 +70,31 @@ public class GEHelper {
         }
     }
 
+    public PlayerProfile getPlayerProfile(String playerId, String gameModelId,
+            String gamificationId) {
+        PlayerStateDTO state = null;
+        try {
+            state = new PlayerControllerApi(apiClient).readStateUsingGET(gamificationId, playerId);
+        } catch (ApiException | IOException e) {
+            logger.error("Exception calling gamification-engine API");
+            throw new GEHelperException(e);
+        }
+        PlayerProfile profile = new PlayerProfile();
+        profile.setPlayerId(playerId);
+        profile.setGameId(gameModelId);
+        profile.setTerritoryScore(extractScore(territoryScoreName, state));
+        profile.setCultureScore(extractScore(cultureScoreName, state));
+        profile.setSportScore(extractScore(sportScoreName, state));
+        return profile;
+    }
+
+    private double extractScore(String scoreName, PlayerStateDTO state) {
+        Set<GameConcept> scores = state.getState().get("PointConcept");
+        return scores.stream().map(gc -> (PointConcept) gc)
+                .filter(p -> p.getName().equals(scoreName))
+                .findFirst().map(s -> s.getScore()).orElseThrow(() -> new IllegalArgumentException(
+                        String.format("score %s not found", scoreName)));
+    }
 
     public void action(String playerId, Action action) {
         ExecutionDataDTO executionData = new ExecutionDataDTO();

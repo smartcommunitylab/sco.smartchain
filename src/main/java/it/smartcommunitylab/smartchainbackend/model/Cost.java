@@ -5,6 +5,17 @@ public class Cost {
     private double cultureScore;
     private double sportScore;
 
+
+    public Cost() {}
+
+
+    public Cost(double territoryScore, double cultureScore, double sportScore) {
+        this.territoryScore = territoryScore;
+        this.cultureScore = cultureScore;
+        this.sportScore = sportScore;
+    }
+
+
     public double getTerritoryScore() {
         return territoryScore;
     }
