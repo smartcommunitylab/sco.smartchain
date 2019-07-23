@@ -31,6 +31,8 @@ public class PlayerManager {
         Validator.throwIfInvalid(subscriber.getPlayerId(),
                 "playerId in subscriber cannot be blank");
 
+        final String gamificationId = gameModelManager.getGamificationId(subscriber.getGameId());
+        subscriber.setGameId(gamificationId);
         // subscribe
         gamificationEngineHelper.subscribe(subscriber);
     }
