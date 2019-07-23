@@ -5,6 +5,7 @@ import java.util.Map;
 public class Action {
 
     private String gameId;
+    private String playerId;
     private String name;
     private Map<String, Object> params;
 
@@ -31,6 +32,14 @@ public class Action {
 
     public void setGameId(String gameId) {
         this.gameId = gameId;
+    }
+
+    public String getPlayerId() {
+        return playerId;
+    }
+
+    public void setPlayerId(String playerId) {
+        this.playerId = playerId;
     }
 
 

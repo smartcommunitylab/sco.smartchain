@@ -3,6 +3,7 @@ package it.smartcommunitylab.smartchainbackend.bean;
 public class Experience {
 
     private String gameId;
+    private String playerId;
     private String name;
 
     public Experience() {
@@ -28,6 +29,14 @@ public class Experience {
 
     public void setGameId(String gameId) {
         this.gameId = gameId;
+    }
+
+    public String getPlayerId() {
+        return playerId;
+    }
+
+    public void setPlayerId(String playerId) {
+        this.playerId = playerId;
     }
 
 }
