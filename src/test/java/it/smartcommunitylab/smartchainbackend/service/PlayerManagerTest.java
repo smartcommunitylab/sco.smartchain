@@ -167,7 +167,7 @@ public class PlayerManagerTest {
         
         GameRewardDTO rewardDTO = new GameRewardDTO();
         rewardDTO.setGameId("game");
-        rewardDTO.setName("my-reward");
+        rewardDTO.setId("my-reward");
         playerManager.consumeReward("faso", rewardDTO);
     }
 

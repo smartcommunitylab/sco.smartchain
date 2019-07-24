@@ -44,6 +44,7 @@ public class GameModelManager {
     public GameModel saveGameModel(GameModel gameModel) {
         gameModel = setActionIds(gameModel);
         gameModel = setExperienceIds(gameModel);
+        gameModel = setRewardIds(gameModel);
         return gameModelRepo.save(gameModel);
     }
 
@@ -62,6 +63,17 @@ public class GameModelManager {
         for (ModelExperience experience : experiences) {
             if (StringUtils.isBlank(experience.getExperienceId())) {
                 experience.setExperienceId(UUID.randomUUID().toString());
+            }
+        }
+        return gameModel;
+    }
+
+
+    private GameModel setRewardIds(GameModel gameModel) {
+        List<ModelReward> rewards = gameModel.getRewards();
+        for (ModelReward reward : rewards) {
+            if (StringUtils.isBlank(reward.getRewardId())) {
+                reward.setRewardId(UUID.randomUUID().toString());
             }
         }
         return gameModel;
@@ -172,9 +184,9 @@ public class GameModelManager {
         final String gameModelId = reward.getGameId();
         GameModel model = getModel(gameModelId);
         Optional<ModelReward> optReward = model.getRewards().stream()
-                .filter(p -> p.getName().equals(reward.getName())).findFirst();
-        return optReward.map(p -> p.getCost()).orElseThrow(() -> new IllegalArgumentException(String
-                .format("reward %s not exist in gameModel %s", reward.getName(), model.getName())));
+                .filter(r -> r.getRewardId().equals(reward.getId())).findFirst();
+        return optReward.map(r -> r.getCost()).orElseThrow(() -> new IllegalArgumentException(String
+                .format("reward %s not exist in gameModel %s", reward.getId(), model.getName())));
     }
 
     public String getGamificationActionId(String gameModelId, String modelActionId) {

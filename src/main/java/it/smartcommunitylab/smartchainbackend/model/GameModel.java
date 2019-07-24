@@ -116,6 +116,7 @@ public class GameModel {
 
 
     public static class ModelReward {
+        private String rewardId;
         private String name;
         private Cost cost;
 
@@ -133,6 +134,14 @@ public class GameModel {
 
         public void setCost(Cost cost) {
             this.cost = cost;
+        }
+
+        public String getRewardId() {
+            return rewardId;
+        }
+
+        public void setRewardId(String rewardId) {
+            this.rewardId = rewardId;
         }
 
 
