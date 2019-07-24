@@ -13,7 +13,7 @@ public class GamificationPersonage {
 
     public GamificationPersonage(String gamificationId, PersonageDTO personage, Cost cost) {
         gameId = gamificationId;
-        name = personage.getName();
+        name = personage.getId();
         territoryScore = cost.getTerritoryScore();
         cultureScore = cost.getCultureScore();
         sportScore = cost.getSportScore();

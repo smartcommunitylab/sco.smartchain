@@ -141,7 +141,7 @@ public class PlayerManagerTest {
 
         PersonageDTO character = new PersonageDTO();
         character.setGameId("game");
-        character.setName("basilisco");
+        character.setId("basilisco");
         playerManager.consumePersonage("faso", character);
     }
 

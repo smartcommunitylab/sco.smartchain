@@ -148,6 +148,7 @@ public class GameModel {
     }
 
     public static class Personage {
+        private String personageId;
         private String name;
         private Cost cost;
 
@@ -182,8 +183,16 @@ public class GameModel {
             }
 
             Personage rhs = (Personage) obj;
-            return new EqualsBuilder().append(name, rhs.name).isEquals();
+            return new EqualsBuilder().append(personageId, rhs.personageId).isEquals();
 
+        }
+
+        public String getPersonageId() {
+            return personageId;
+        }
+
+        public void setPersonageId(String personageId) {
+            this.personageId = personageId;
         }
 
     }

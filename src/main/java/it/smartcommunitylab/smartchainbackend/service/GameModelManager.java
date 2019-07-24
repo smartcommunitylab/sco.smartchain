@@ -172,11 +172,11 @@ public class GameModelManager {
         final String gameModelId = personage.getGameId();
         GameModel model = getModel(gameModelId);
         Optional<Personage> optPersonage = model.getPersonages().stream()
-                .filter(p -> p.getName().equals(personage.getName())).findFirst();
+                .filter(p -> p.getPersonageId().equals(personage.getId())).findFirst();
         return optPersonage.map(p -> p.getCost())
                 .orElseThrow(() -> new IllegalArgumentException(
-                        String.format("personage %s not exist in gameModel %s", personage.getName(),
-                                model.getName())));
+                        String.format("personage %s not exist in gameModel %s", personage.getId(),
+                                model.getId())));
     }
 
 
