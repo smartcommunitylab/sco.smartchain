@@ -5,6 +5,10 @@ import java.util.List;
 
 import org.apache.commons.lang3.builder.EqualsBuilder;
 
+import com.fasterxml.jackson.annotation.JsonView;
+
+import it.smartcommunitylab.smartchainbackend.controller.JsonVisibility;
+
 public class GameModel {
     private String id;
     private String name;
@@ -40,9 +44,16 @@ public class GameModel {
     }
 
     public static class ModelAction {
+        @JsonView(JsonVisibility.Public.class)
         private String actionId;
+
+        @JsonView(JsonVisibility.Public.class)
         private String name;
+
+        @JsonView(JsonVisibility.Public.class)
         private String description;
+
+        @JsonView(JsonVisibility.Internal.class)
         private String gamificationActionName;
 
         public String getName() {

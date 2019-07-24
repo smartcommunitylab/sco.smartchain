@@ -7,6 +7,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.fasterxml.jackson.annotation.JsonView;
+
 import it.smartcommunitylab.smartchainbackend.model.GameModel;
 import it.smartcommunitylab.smartchainbackend.model.GameModel.ModelAction;
 import it.smartcommunitylab.smartchainbackend.model.GameModel.ModelExperience;
@@ -21,6 +23,7 @@ public class GameModelController {
     private GameModelManager gameModelManager;
 
     @GetMapping("/api/game-model/{gameModelId}/action")
+    @JsonView(JsonVisibility.Public.class)
     public List<ModelAction> getActions(@PathVariable String gameModelId) {
         return gameModelManager.getActions(gameModelId);
     }
