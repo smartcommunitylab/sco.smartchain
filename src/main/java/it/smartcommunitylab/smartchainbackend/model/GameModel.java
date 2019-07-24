@@ -22,8 +22,17 @@ public class GameModel {
 
 
     public static class ModelExperience {
+        @JsonView(JsonVisibility.Public.class)
+        private String experienceId;
+
+        @JsonView(JsonVisibility.Public.class)
         private String name;
+
+        @JsonView(JsonVisibility.Public.class)
         private String description;
+
+        @JsonView(JsonVisibility.Internal.class)
+        private String gamificationExperienceName;
 
         public String getName() {
             return name;
@@ -39,6 +48,22 @@ public class GameModel {
 
         public void setDescription(String description) {
             this.description = description;
+        }
+
+        public String getExperienceId() {
+            return experienceId;
+        }
+
+        public void setExperienceId(String experienceId) {
+            this.experienceId = experienceId;
+        }
+
+        public String getGamificationExperienceName() {
+            return gamificationExperienceName;
+        }
+
+        public void setGamificationExperienceName(String gamificationExperienceName) {
+            this.gamificationExperienceName = gamificationExperienceName;
         }
 
     }

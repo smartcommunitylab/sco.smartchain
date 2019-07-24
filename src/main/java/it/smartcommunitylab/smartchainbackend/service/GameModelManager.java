@@ -43,6 +43,7 @@ public class GameModelManager {
 
     public GameModel saveGameModel(GameModel gameModel) {
         gameModel = setActionIds(gameModel);
+        gameModel = setExperienceIds(gameModel);
         return gameModelRepo.save(gameModel);
     }
 
@@ -51,6 +52,16 @@ public class GameModelManager {
         for (ModelAction action : actions) {
             if (StringUtils.isBlank(action.getActionId())) {
                 action.setActionId(UUID.randomUUID().toString());
+            }
+        }
+        return gameModel;
+    }
+
+    private GameModel setExperienceIds(GameModel gameModel) {
+        List<ModelExperience> experiences = gameModel.getExperiences();
+        for (ModelExperience experience : experiences) {
+            if (StringUtils.isBlank(experience.getExperienceId())) {
+                experience.setExperienceId(UUID.randomUUID().toString());
             }
         }
         return gameModel;
@@ -172,5 +183,15 @@ public class GameModelManager {
                 .map(a -> a.getGamificationActionName())
                 .orElseThrow(() -> new IllegalArgumentException(String.format(
                         "modelActionId %s not exist in gameModel %s", modelActionId, gameModelId)));
+    }
+
+    public String getGamificationExperienceId(String gameModelId, String modelExperienceId) {
+        GameModel model = getModel(gameModelId);
+        return model.getExperiences().stream()
+                .filter(e -> e.getExperienceId().equals(modelExperienceId)).findFirst()
+                .map(e -> e.getGamificationExperienceName())
+                .orElseThrow(() -> new IllegalArgumentException(
+                        String.format("modelExperienceId %s not exist in gameModel %s",
+                                modelExperienceId, gameModelId)));
     }
 }

@@ -57,8 +57,8 @@ public class PlayerManager {
         gamificationEngineHelper.action(playerId, gamificationAction);
     }
 
-    public void playExperience(String playerId, Experience exp) {
-        final String gameModelId = exp.getGameId();
+    public void playExperience(String playerId, Experience experience) {
+        final String gameModelId = experience.getGameId();
         boolean isSubscribed = gameModelManager.isSubscribed(playerId, gameModelId);
         if (!isSubscribed) {
             throw new IllegalArgumentException(
@@ -66,9 +66,11 @@ public class PlayerManager {
         }
 
         final String gamificationId = gameModelManager.getGamificationId(gameModelId);
+        final String gamificationExperienceId =
+                gameModelManager.getGamificationExperienceId(gameModelId, experience.getId());
         Experience gamificationExperience = new Experience();
         gamificationExperience.setGameId(gamificationId);
-        gamificationExperience.setName(exp.getName());
+        gamificationExperience.setId(gamificationExperienceId);
         gamificationEngineHelper.experience(playerId, gamificationExperience);
 
     }

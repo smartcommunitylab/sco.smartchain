@@ -29,6 +29,7 @@ public class GameModelController {
     }
 
     @GetMapping("/api/game-model/{gameModelId}/experience")
+    @JsonView(JsonVisibility.Public.class)
     public List<ModelExperience> getExperiences(@PathVariable String gameModelId) {
         return gameModelManager.getExperiences(gameModelId);
     }

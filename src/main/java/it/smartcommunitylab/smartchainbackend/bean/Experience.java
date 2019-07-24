@@ -4,7 +4,7 @@ public class Experience {
 
     private String gameId;
     private String playerId;
-    private String name;
+    private String id;
 
     public Experience() {
 
@@ -12,15 +12,15 @@ public class Experience {
 
     public Experience(String gameId, String name) {
         this.gameId = gameId;
-        this.name = name;
+        this.id = name;
     }
 
-    public String getName() {
-        return name;
+    public String getId() {
+        return id;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setId(String id) {
+        this.id = id;
     }
 
     public String getGameId() {

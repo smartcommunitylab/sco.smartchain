@@ -156,7 +156,7 @@ public class GEHelper {
         action.setGameId(exp.getGameId());
         action.setId(experienceAction);
         action.setParams(new HashMap<>());
-        action.getParams().put("name", exp.getName());
+        action.getParams().put("name", exp.getId());
 
         return action;
     }
