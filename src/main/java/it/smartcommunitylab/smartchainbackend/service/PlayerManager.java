@@ -48,9 +48,11 @@ public class PlayerManager {
         }
 
         final String gamificationId = gameModelManager.getGamificationId(gameModelId);
+        final String gamificationActionId =
+                gameModelManager.getGamificationActionId(gameModelId, action.getId());
         Action gamificationAction = new Action();
         gamificationAction.setGameId(gamificationId);
-        gamificationAction.setName(action.getName());
+        gamificationAction.setId(gamificationActionId);
         gamificationAction.setParams(action.getParams());
         gamificationEngineHelper.action(playerId, gamificationAction);
     }

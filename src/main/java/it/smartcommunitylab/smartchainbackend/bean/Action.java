@@ -6,16 +6,16 @@ public class Action {
 
     private String gameId;
     private String playerId;
-    private String name;
+    private String id;
     private Map<String, Object> params;
 
 
-    public String getName() {
-        return name;
+    public String getId() {
+        return id;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setId(String id) {
+        this.id = id;
     }
 
     public Map<String, Object> getParams() {

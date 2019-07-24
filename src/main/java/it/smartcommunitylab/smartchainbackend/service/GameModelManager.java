@@ -2,8 +2,10 @@ package it.smartcommunitylab.smartchainbackend.service;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,9 +16,9 @@ import it.smartcommunitylab.smartchainbackend.bean.PersonageDTO;
 import it.smartcommunitylab.smartchainbackend.bean.Player;
 import it.smartcommunitylab.smartchainbackend.model.Cost;
 import it.smartcommunitylab.smartchainbackend.model.GameModel;
-import it.smartcommunitylab.smartchainbackend.model.GameModel.ModelReward;
 import it.smartcommunitylab.smartchainbackend.model.GameModel.ModelAction;
 import it.smartcommunitylab.smartchainbackend.model.GameModel.ModelExperience;
+import it.smartcommunitylab.smartchainbackend.model.GameModel.ModelReward;
 import it.smartcommunitylab.smartchainbackend.model.GameModel.Personage;
 import it.smartcommunitylab.smartchainbackend.model.Subscription;
 import it.smartcommunitylab.smartchainbackend.model.Subscription.CompositeKey;
@@ -40,7 +42,18 @@ public class GameModelManager {
 
 
     public GameModel saveGameModel(GameModel gameModel) {
+        gameModel = setActionIds(gameModel);
         return gameModelRepo.save(gameModel);
+    }
+
+    private GameModel setActionIds(GameModel gameModel) {
+        List<ModelAction> actions = gameModel.getActions();
+        for (ModelAction action : actions) {
+            if (StringUtils.isBlank(action.getActionId())) {
+                action.setActionId(UUID.randomUUID().toString());
+            }
+        }
+        return gameModel;
     }
 
     public void deleteGameModel(GameModel gameModel) {
@@ -151,5 +164,13 @@ public class GameModelManager {
                 .filter(p -> p.getName().equals(reward.getName())).findFirst();
         return optReward.map(p -> p.getCost()).orElseThrow(() -> new IllegalArgumentException(String
                 .format("reward %s not exist in gameModel %s", reward.getName(), model.getName())));
+    }
+
+    public String getGamificationActionId(String gameModelId, String modelActionId) {
+        GameModel model = getModel(gameModelId);
+        return model.getActions().stream().filter(a -> a.getActionId().equals(modelActionId)).findFirst()
+                .map(a -> a.getGamificationActionName())
+                .orElseThrow(() -> new IllegalArgumentException(String.format(
+                        "modelActionId %s not exist in gameModel %s", modelActionId, gameModelId)));
     }
 }

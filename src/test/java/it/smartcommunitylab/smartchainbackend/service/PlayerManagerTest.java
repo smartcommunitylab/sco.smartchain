@@ -25,6 +25,7 @@ import it.smartcommunitylab.smartchainbackend.bean.PersonageDTO;
 import it.smartcommunitylab.smartchainbackend.bean.Player;
 import it.smartcommunitylab.smartchainbackend.model.Cost;
 import it.smartcommunitylab.smartchainbackend.model.GameModel;
+import it.smartcommunitylab.smartchainbackend.model.GameModel.ModelAction;
 import it.smartcommunitylab.smartchainbackend.model.GameModel.ModelReward;
 import it.smartcommunitylab.smartchainbackend.model.GameModel.Personage;
 import it.smartcommunitylab.smartchainbackend.model.PlayerProfile;
@@ -64,6 +65,12 @@ public class PlayerManagerTest {
         game.setId("game");
         game.setGamificationId("5d020a44e22362287f1677e0");
         game.setName("game");
+
+        ModelAction bringAFriendAction = new ModelAction();
+        bringAFriendAction.setActionId("bring-a-friend");
+        bringAFriendAction.setName("Bring a friend into the game");
+        game.getActions().add(bringAFriendAction);
+
         gameModelManager.saveGameModel(game);
 
         Player player = new Player();
@@ -74,7 +81,7 @@ public class PlayerManagerTest {
 
         Action action = new Action();
         action.setGameId("game");
-        action.setName("bring-a-friend");
+        action.setId("bring-a-friend");
         playerManager.playAction("faso", action);
     }
 
@@ -94,7 +101,7 @@ public class PlayerManagerTest {
 
         Action action = new Action();
         action.setGameId("game");
-        action.setName("spend-50");
+        action.setId("spend-50");
         action.setParams(new HashMap<>());
         action.getParams().put("value", 80.0);
         playerManager.playAction("faso", action);

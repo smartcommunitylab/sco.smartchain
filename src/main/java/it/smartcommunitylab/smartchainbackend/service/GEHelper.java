@@ -106,7 +106,7 @@ public class GEHelper {
         executionData.setExecutionMoment(new Date());
         try {
             new ExecutionControllerApi(apiClient).executeActionUsingPOST(action.getGameId(),
-                    action.getName(), executionData);
+                    action.getId(), executionData);
         } catch (ApiException e) {
             logger.error("Exception calling gamification-engine API");
             throw new GEHelperException(e);
@@ -129,7 +129,7 @@ public class GEHelper {
     private Action convert(GamificationReward reward) {
         Action action = new Action();
         action.setGameId(reward.getGameId());
-        action.setName(consumeRewardAction);
+        action.setId(consumeRewardAction);
         action.setParams(new HashMap<>());
         action.getParams().put("territory", reward.getTerritoryScore());
         action.getParams().put("culture", reward.getCultureScore());
@@ -141,7 +141,7 @@ public class GEHelper {
     private Action convert(GamificationPersonage personage) {
         Action action = new Action();
         action.setGameId(personage.getGameId());
-        action.setName(consumePersonageAction);
+        action.setId(consumePersonageAction);
         action.setParams(new HashMap<>());
         action.getParams().put("character", personage.getName());
         action.getParams().put("territory", personage.getTerritoryScore());
@@ -154,7 +154,7 @@ public class GEHelper {
     private Action convert(Experience exp) {
         Action action = new Action();
         action.setGameId(exp.getGameId());
-        action.setName(experienceAction);
+        action.setId(experienceAction);
         action.setParams(new HashMap<>());
         action.getParams().put("name", exp.getName());
 

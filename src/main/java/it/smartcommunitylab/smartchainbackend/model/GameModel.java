@@ -40,8 +40,10 @@ public class GameModel {
     }
 
     public static class ModelAction {
+        private String actionId;
         private String name;
         private String description;
+        private String gamificationActionName;
 
         public String getName() {
             return name;
@@ -57,6 +59,22 @@ public class GameModel {
 
         public void setDescription(String description) {
             this.description = description;
+        }
+
+        public String getActionId() {
+            return actionId;
+        }
+
+        public void setActionId(String id) {
+            this.actionId = id;
+        }
+
+        public String getGamificationActionName() {
+            return gamificationActionName;
+        }
+
+        public void setGamificationActionName(String gamificationActionName) {
+            this.gamificationActionName = gamificationActionName;
         }
     }
 
