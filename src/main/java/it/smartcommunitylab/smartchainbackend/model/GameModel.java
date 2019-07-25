@@ -38,6 +38,21 @@ public class GameModel {
         return modelExperiences;
     }
 
+    public List<ModelAction> getActions(Collection<String> actionIds) {
+        List<ModelAction> modelActions = new ArrayList<>();
+        for (String actionId : actionIds) {
+            actions.stream().filter(a -> a.getActionId().equals(actionId)).findFirst()
+                    .ifPresent(a -> modelActions.add(a));
+        }
+        return modelActions;
+    }
+
+    public ModelAction getAction(String actionId) {
+        return actions.stream().filter(e -> actionId.equals(e.getActionId())).findFirst()
+                .orElseThrow(() -> new IllegalArgumentException(
+                        String.format("actionId  %s not exist in game-model %s", actionId, id)));
+    }
+
     public static class ModelExperience {
         @JsonView(JsonVisibility.Public.class)
         private String experienceId;
@@ -329,7 +344,4 @@ public class GameModel {
     public void setExperiences(List<ModelExperience> experiences) {
         this.experiences = experiences;
     }
-
-
-
 }

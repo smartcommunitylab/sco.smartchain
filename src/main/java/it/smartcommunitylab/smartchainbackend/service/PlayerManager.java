@@ -15,6 +15,7 @@ import it.smartcommunitylab.smartchainbackend.bean.GameRewardDTO;
 import it.smartcommunitylab.smartchainbackend.bean.PersonageDTO;
 import it.smartcommunitylab.smartchainbackend.model.Cost;
 import it.smartcommunitylab.smartchainbackend.model.GameModel;
+import it.smartcommunitylab.smartchainbackend.model.GameModel.ModelAction;
 import it.smartcommunitylab.smartchainbackend.model.GameModel.ModelExperience;
 import it.smartcommunitylab.smartchainbackend.model.GameModel.ModelReward;
 import it.smartcommunitylab.smartchainbackend.model.GameModel.Personage;
@@ -60,7 +61,9 @@ public class PlayerManager {
                     String.format("%s is not subscribed to game %s", playerId, gameModelId));
         }
 
-        final String gamificationId = gameModelManager.getGamificationId(gameModelId);
+        final GameModel model = gameModelManager.getModel(gameModelId);
+        final ModelAction modelAction = model.getAction(action.getId());
+        final String gamificationId = model.getGamificationId();
         final String gamificationActionId =
                 gameModelManager.getGamificationActionId(gameModelId, action.getId());
         Action gamificationAction = new Action();
@@ -68,6 +71,9 @@ public class PlayerManager {
         gamificationAction.setId(gamificationActionId);
         gamificationAction.setParams(action.getParams());
         gamificationEngineHelper.action(playerId, gamificationAction);
+        completeAction(action);
+        logger.info("Player {} completed action {} (id: {})", playerId, modelAction.getName(),
+                modelAction.getActionId());
     }
 
     public void playExperience(String playerId, Experience experience) {
@@ -89,7 +95,7 @@ public class PlayerManager {
         gamificationEngineHelper.experience(playerId, gamificationExperience);
         completeExperience(experience);
         logger.info("Player {} completed experience {} (id: {})", playerId,
-                modelExperience.getName(), modelExperience.getExperienceId());;
+                modelExperience.getName(), modelExperience.getExperienceId());
 
 
     }
@@ -103,7 +109,17 @@ public class PlayerManager {
             s.getCompletedExperiences().add(experience.getId());
             subscriptionRepo.save(s);
         });
-        
+    }
+
+    private void completeAction(Action action) {
+        final String gameModelId = action.getGameId();
+        final String playerId = action.getPlayerId();
+        Optional<Subscription> subscription =
+                subscriptionRepo.findById(new CompositeKey(gameModelId, playerId));
+        subscription.ifPresent(s -> {
+            s.getCompletedActions().add(action.getId());
+            subscriptionRepo.save(s);
+        });
     }
 
     public void consumePersonage(String playerId, PersonageDTO personage) {
@@ -155,6 +171,10 @@ public class PlayerManager {
             List<ModelExperience> modelExperiences =
                     model.getExperiences(s.getCompletedExperiences());
             profile.setCompletedExperiences(modelExperiences);
+
+            List<ModelAction> modelActions = model.getActions(s.getCompletedActions());
+            profile.setCompletedActions(modelActions);
+
         });
 
         return profile;

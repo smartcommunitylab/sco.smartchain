@@ -12,6 +12,7 @@ public class Subscription {
     private CompositeKey id;
 
     private List<String> completedExperiences = new ArrayList<>();
+    private List<String> completedActions = new ArrayList<>();
 
 
     public static class CompositeKey implements Serializable {
@@ -58,6 +59,14 @@ public class Subscription {
 
     public void setCompletedExperiences(List<String> completedExperiences) {
         this.completedExperiences = completedExperiences;
+    }
+
+    public List<String> getCompletedActions() {
+        return completedActions;
+    }
+
+    public void setCompletedActions(List<String> completedActions) {
+        this.completedActions = completedActions;
     }
 
 
