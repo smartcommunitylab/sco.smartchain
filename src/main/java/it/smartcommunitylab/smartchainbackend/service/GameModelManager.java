@@ -151,7 +151,7 @@ public class GameModelManager {
         return getModel(gameModelId).getPersonages();
     }
 
-    private GameModel getModel(String gameModelId) {
+    public GameModel getModel(String gameModelId) {
         Optional<GameModel> gameModel = gameModelRepo.findById(gameModelId);
         if (gameModel.isPresent()) {
             return gameModel.get();

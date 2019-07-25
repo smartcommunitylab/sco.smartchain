@@ -1,6 +1,7 @@
 package it.smartcommunitylab.smartchainbackend.model;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 import org.apache.commons.lang3.builder.EqualsBuilder;
@@ -20,6 +21,22 @@ public class GameModel {
     private List<ModelAction> actions = new ArrayList<>();
     private List<ModelExperience> experiences = new ArrayList<>();
 
+
+    public ModelExperience getExperience(String experienceId) {
+        return experiences.stream().filter(e -> experienceId.equals(e.getExperienceId()))
+                .findFirst()
+                .orElseThrow(() -> new IllegalArgumentException(String
+                        .format("experienceId  %s not exist in game-model %s", experienceId, id)));
+    }
+
+    public List<ModelExperience> getExperiences(Collection<String> experienceIds) {
+        List<ModelExperience> modelExperiences = new ArrayList<>();
+        for (String expId : experienceIds) {
+            experiences.stream().filter(e -> e.getExperienceId().equals(expId)).findFirst()
+                    .ifPresent(e -> modelExperiences.add(e));
+        }
+        return modelExperiences;
+    }
 
     public static class ModelExperience {
         @JsonView(JsonVisibility.Public.class)
@@ -142,6 +159,7 @@ public class GameModel {
         private String name;
         private Cost cost;
         private String iconUrl;
+        private String description;
 
         public String getName() {
             return name;
@@ -175,6 +193,14 @@ public class GameModel {
             this.iconUrl = iconUrl;
         }
 
+        public String getDescription() {
+            return description;
+        }
+
+        public void setDescription(String description) {
+            this.description = description;
+        }
+
 
     }
 
@@ -183,6 +209,7 @@ public class GameModel {
         private String name;
         private Cost cost;
         private String iconUrl;
+        private String description;
 
         public String getName() {
             return name;
@@ -233,6 +260,14 @@ public class GameModel {
 
         public void setIconUrl(String iconUrl) {
             this.iconUrl = iconUrl;
+        }
+
+        public String getDescription() {
+            return description;
+        }
+
+        public void setDescription(String description) {
+            this.description = description;
         }
 
     }

@@ -1,6 +1,8 @@
 package it.smartcommunitylab.smartchainbackend.model;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.springframework.data.annotation.Id;
 
@@ -8,6 +10,9 @@ public class Subscription {
 
     @Id
     private CompositeKey id;
+
+    private List<String> completedExperiences = new ArrayList<>();
+
 
     public static class CompositeKey implements Serializable {
 
@@ -47,6 +52,13 @@ public class Subscription {
         this.id = id;
     }
 
+    public List<String> getCompletedExperiences() {
+        return completedExperiences;
+    }
+
+    public void setCompletedExperiences(List<String> completedExperiences) {
+        this.completedExperiences = completedExperiences;
+    }
 
 
 

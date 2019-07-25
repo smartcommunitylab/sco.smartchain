@@ -1,8 +1,11 @@
 package it.smartcommunitylab.smartchainbackend.service;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -11,9 +14,14 @@ import it.smartcommunitylab.smartchainbackend.bean.Experience;
 import it.smartcommunitylab.smartchainbackend.bean.GameRewardDTO;
 import it.smartcommunitylab.smartchainbackend.bean.PersonageDTO;
 import it.smartcommunitylab.smartchainbackend.model.Cost;
+import it.smartcommunitylab.smartchainbackend.model.GameModel;
+import it.smartcommunitylab.smartchainbackend.model.GameModel.ModelExperience;
 import it.smartcommunitylab.smartchainbackend.model.GameModel.ModelReward;
 import it.smartcommunitylab.smartchainbackend.model.GameModel.Personage;
 import it.smartcommunitylab.smartchainbackend.model.PlayerProfile;
+import it.smartcommunitylab.smartchainbackend.model.Subscription;
+import it.smartcommunitylab.smartchainbackend.model.Subscription.CompositeKey;
+import it.smartcommunitylab.smartchainbackend.repository.SubscriptionRepository;
 
 @Service
 public class PlayerManager {
@@ -23,6 +31,11 @@ public class PlayerManager {
 
     @Autowired
     private GameModelManager gameModelManager;
+
+    @Autowired
+    private SubscriptionRepository subscriptionRepo;
+
+    private static final Logger logger = LogManager.getLogger(PlayerManager.class);
 
     // public void subscribe(Player subscriber) {
     //
@@ -65,14 +78,32 @@ public class PlayerManager {
                     String.format("%s is not subscribed to game %s", playerId, gameModelId));
         }
 
-        final String gamificationId = gameModelManager.getGamificationId(gameModelId);
-        final String gamificationExperienceId =
+        final GameModel model = gameModelManager.getModel(gameModelId);
+        final ModelExperience modelExperience = model.getExperience(experience.getId());
+        final String gamificationId = model.getGamificationId();
+        final String gamificationExperienceId = 
                 gameModelManager.getGamificationExperienceId(gameModelId, experience.getId());
         Experience gamificationExperience = new Experience();
         gamificationExperience.setGameId(gamificationId);
         gamificationExperience.setId(gamificationExperienceId);
         gamificationEngineHelper.experience(playerId, gamificationExperience);
+        completeExperience(experience);
+        logger.info("Player {} completed experience {} (id: {})", playerId,
+                modelExperience.getName(), modelExperience.getExperienceId());;
 
+
+    }
+
+    private void completeExperience(Experience experience) {
+       final String gameModelId = experience.getGameId();
+       final String playerId = experience.getPlayerId();
+        Optional<Subscription> subscription =
+                subscriptionRepo.findById(new CompositeKey(gameModelId, playerId));
+        subscription.ifPresent(s -> {
+            s.getCompletedExperiences().add(experience.getId());
+            subscriptionRepo.save(s);
+        });
+        
     }
 
     public void consumePersonage(String playerId, PersonageDTO personage) {
@@ -104,7 +135,8 @@ public class PlayerManager {
     }
 
     public PlayerProfile getProfile(String playerId, String gameModelId) {
-        final String gamificationId = gameModelManager.getGamificationId(gameModelId);
+        final GameModel model = gameModelManager.getModel(gameModelId);
+        final String gamificationId = model.getGamificationId();
         PlayerProfile profile =
                 gamificationEngineHelper.getPlayerProfile(playerId, gameModelId, gamificationId);
 
@@ -116,6 +148,14 @@ public class PlayerManager {
 
         profile.setUsablePersonages(usablePersonages);
         profile.setUsableRewards(usableRewards);
+
+        Optional<Subscription> subscription =
+                subscriptionRepo.findById(new CompositeKey(gameModelId, playerId));
+        subscription.ifPresent(s -> {
+            List<ModelExperience> modelExperiences =
+                    model.getExperiences(s.getCompletedExperiences());
+            profile.setCompletedExperiences(modelExperiences);
+        });
 
         return profile;
     }

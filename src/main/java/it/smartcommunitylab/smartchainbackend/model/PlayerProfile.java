@@ -3,6 +3,8 @@ package it.smartcommunitylab.smartchainbackend.model;
 import java.util.ArrayList;
 import java.util.List;
 
+import it.smartcommunitylab.smartchainbackend.model.GameModel.ModelAction;
+import it.smartcommunitylab.smartchainbackend.model.GameModel.ModelExperience;
 import it.smartcommunitylab.smartchainbackend.model.GameModel.ModelReward;
 import it.smartcommunitylab.smartchainbackend.model.GameModel.Personage;
 
@@ -17,6 +19,9 @@ public class PlayerProfile {
 
     private List<Personage> usablePersonages = new ArrayList<>();
     private List<ModelReward> usableRewards = new ArrayList<>();
+
+    private List<ModelAction> completedActions = new ArrayList<>();
+    private List<ModelExperience> completedExperiences = new ArrayList<>();
 
 
     public String getPlayerId() {
@@ -81,6 +86,22 @@ public class PlayerProfile {
 
     public void setUsableRewards(List<ModelReward> usableRewards) {
         this.usableRewards = usableRewards;
+    }
+
+    public List<ModelAction> getCompletedActions() {
+        return completedActions;
+    }
+
+    public void setCompletedActions(List<ModelAction> completedActions) {
+        this.completedActions = completedActions;
+    }
+
+    public List<ModelExperience> getCompletedExperiences() {
+        return completedExperiences;
+    }
+
+    public void setCompletedExperiences(List<ModelExperience> completedExperiences) {
+        this.completedExperiences = completedExperiences;
     }
 
 
