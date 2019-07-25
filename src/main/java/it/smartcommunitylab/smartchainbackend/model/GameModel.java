@@ -31,6 +31,9 @@ public class GameModel {
         @JsonView(JsonVisibility.Public.class)
         private String description;
 
+        @JsonView(JsonVisibility.Public.class)
+        private String iconUrl;
+
         @JsonView(JsonVisibility.Internal.class)
         private String gamificationExperienceName;
 
@@ -66,6 +69,14 @@ public class GameModel {
             this.gamificationExperienceName = gamificationExperienceName;
         }
 
+        public String getIconUrl() {
+            return iconUrl;
+        }
+
+        public void setIconUrl(String iconUrl) {
+            this.iconUrl = iconUrl;
+        }
+
     }
 
     public static class ModelAction {
@@ -77,6 +88,9 @@ public class GameModel {
 
         @JsonView(JsonVisibility.Public.class)
         private String description;
+
+        @JsonView(JsonVisibility.Public.class)
+        private String iconUrl;
 
         @JsonView(JsonVisibility.Internal.class)
         private String gamificationActionName;
@@ -112,6 +126,14 @@ public class GameModel {
         public void setGamificationActionName(String gamificationActionName) {
             this.gamificationActionName = gamificationActionName;
         }
+
+        public String getIconUrl() {
+            return iconUrl;
+        }
+
+        public void setIconUrl(String iconUrl) {
+            this.iconUrl = iconUrl;
+        }
     }
 
 
@@ -119,6 +141,7 @@ public class GameModel {
         private String rewardId;
         private String name;
         private Cost cost;
+        private String iconUrl;
 
         public String getName() {
             return name;
@@ -144,6 +167,14 @@ public class GameModel {
             this.rewardId = rewardId;
         }
 
+        public String getIconUrl() {
+            return iconUrl;
+        }
+
+        public void setIconUrl(String iconUrl) {
+            this.iconUrl = iconUrl;
+        }
+
 
     }
 
@@ -151,6 +182,7 @@ public class GameModel {
         private String personageId;
         private String name;
         private Cost cost;
+        private String iconUrl;
 
         public String getName() {
             return name;
@@ -193,6 +225,14 @@ public class GameModel {
 
         public void setPersonageId(String personageId) {
             this.personageId = personageId;
+        }
+
+        public String getIconUrl() {
+            return iconUrl;
+        }
+
+        public void setIconUrl(String iconUrl) {
+            this.iconUrl = iconUrl;
         }
 
     }
