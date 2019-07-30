@@ -30,6 +30,11 @@ public class PlayerController {
         gameModelManager.subscribe(subscriber);
     }
 
+    @PostMapping(value = "/api/unsubscribe")
+    public void unsubscribe(@RequestBody Player unsubscriber) {
+        gameModelManager.unsubscribe(unsubscriber);
+    }
+
     @GetMapping("api/profile/{gameModelId}/{playerId}")
     public PlayerProfile getProfile(@PathVariable String gameModelId,
             @PathVariable String playerId) {

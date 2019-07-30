@@ -71,6 +71,16 @@ public class GEHelper {
         }
     }
 
+    public void unsubscribe(Player unsubscriber) {
+        try {
+            new PlayerControllerApi(apiClient).deletePlayerUsingDELETE1(unsubscriber.getGameId(),
+                    unsubscriber.getPlayerId());
+        } catch (ApiException e) {
+            logger.error("Exception calling gamification-engine API");
+            throw new GEHelperException(e);
+        }
+    }
+
     public PlayerProfile getPlayerProfile(String playerId, String gameModelId,
             String gamificationId) {
         PlayerStateDTO state = null;

@@ -94,6 +94,36 @@ public class GameModelManager {
                 .collect(Collectors.toList());
     }
 
+
+    public Subscription unsubscribe(Player unsubscriber) {
+        Validator.throwIfInvalid(unsubscriber.getGameId(), "gameId cannot be blank");
+        Validator.throwIfInvalid(unsubscriber.getPlayerId(), "playerId cannot be blank");
+
+        Optional<GameModel> existGameModel = gameModelRepo.findById(unsubscriber.getGameId());
+
+        if (!existGameModel.isPresent()) {
+            throw new IllegalArgumentException("gameModel not exist");
+        }
+
+        CompositeKey subscriptionId =
+                new CompositeKey(unsubscriber.getGameId(), unsubscriber.getPlayerId());
+
+        Optional<Subscription> existentSubscription = subscriptionRepo.findById(subscriptionId);
+
+        if (existentSubscription.isPresent()) {
+            Subscription subscription = existentSubscription.get();
+            Player gamificationPlayer = new Player();
+            final String gamificationId = existGameModel.get().getGamificationId();
+            gamificationPlayer.setGameId(gamificationId);
+            gamificationPlayer.setPlayerId(unsubscriber.getPlayerId());
+            gamificationEngineHelper.unsubscribe(gamificationPlayer);
+            subscriptionRepo.delete(subscription);
+            return subscription;
+        }
+
+        return null;
+    }
+
     public Subscription subscribe(Player player) {
         Validator.throwIfInvalid(player.getGameId(), "gameId cannot be blank");
         Validator.throwIfInvalid(player.getPlayerId(), "playerId cannot be blank");
