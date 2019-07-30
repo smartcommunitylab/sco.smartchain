@@ -12,7 +12,6 @@ public class PlayerProfile {
 
     private String playerId;
     private String gameId;
-    private String name;
     private double territoryScore;
     private double cultureScore;
     private double sportScore;
@@ -38,14 +37,6 @@ public class PlayerProfile {
 
     public void setGameId(String gameId) {
         this.gameId = gameId;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
     }
 
     public double getTerritoryScore() {
