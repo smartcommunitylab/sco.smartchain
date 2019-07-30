@@ -1,8 +1,15 @@
 package it.smartcommunitylab.smartchainbackend.model;
 
+import com.fasterxml.jackson.annotation.JsonView;
+
+import it.smartcommunitylab.smartchainbackend.controller.JsonVisibility;
+
 public class Cost {
+    @JsonView(JsonVisibility.Public.class)
     private double territoryScore;
+    @JsonView(JsonVisibility.Public.class)
     private double cultureScore;
+    @JsonView(JsonVisibility.Public.class)
     private double sportScore;
 
 

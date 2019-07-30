@@ -8,17 +8,25 @@ import org.apache.commons.lang3.builder.EqualsBuilder;
 
 import com.fasterxml.jackson.annotation.JsonView;
 
+import io.swagger.annotations.ApiModelProperty;
 import it.smartcommunitylab.smartchainbackend.controller.JsonVisibility;
 
 public class GameModel {
+    @JsonView(JsonVisibility.Public.class)
     private String id;
+    @JsonView(JsonVisibility.Public.class)
     private String name;
-    private String gamificationId;
-    // ?? private String gameContractId;
 
+    @ApiModelProperty(hidden = true)
+    @JsonView(JsonVisibility.Internal.class)
+    private String gamificationId;
+    @JsonView(JsonVisibility.Public.class)
     private List<Personage> personages = new ArrayList<>();
+    @JsonView(JsonVisibility.Public.class)
     private List<ModelReward> rewards = new ArrayList<>();
+    @JsonView(JsonVisibility.Public.class)
     private List<ModelAction> actions = new ArrayList<>();
+    @JsonView(JsonVisibility.Public.class)
     private List<ModelExperience> experiences = new ArrayList<>();
 
 
@@ -67,6 +75,7 @@ public class GameModel {
         private String iconUrl;
 
         @JsonView(JsonVisibility.Internal.class)
+        @ApiModelProperty(hidden = true)
         private String gamificationExperienceName;
 
         public String getName() {
@@ -125,6 +134,7 @@ public class GameModel {
         private String iconUrl;
 
         @JsonView(JsonVisibility.Internal.class)
+        @ApiModelProperty(hidden = true)
         private String gamificationActionName;
 
         public String getName() {
@@ -170,10 +180,15 @@ public class GameModel {
 
 
     public static class ModelReward {
+        @JsonView(JsonVisibility.Public.class)
         private String rewardId;
+        @JsonView(JsonVisibility.Public.class)
         private String name;
+        @JsonView(JsonVisibility.Public.class)
         private Cost cost;
+        @JsonView(JsonVisibility.Public.class)
         private String iconUrl;
+        @JsonView(JsonVisibility.Public.class)
         private String description;
 
         public String getName() {
@@ -220,10 +235,15 @@ public class GameModel {
     }
 
     public static class Personage {
+        @JsonView(JsonVisibility.Public.class)
         private String personageId;
+        @JsonView(JsonVisibility.Public.class)
         private String name;
+        @JsonView(JsonVisibility.Public.class)
         private Cost cost;
+        @JsonView(JsonVisibility.Public.class)
         private String iconUrl;
+        @JsonView(JsonVisibility.Public.class)
         private String description;
 
         public String getName() {

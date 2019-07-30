@@ -45,11 +45,13 @@ public class GameModelController {
     }
 
     @GetMapping("/api/game-model")
+    @JsonView(JsonVisibility.Public.class)
     public List<GameModel> getGameModels() {
         return gameModelManager.readGameModels();
     }
 
     @GetMapping("/api/game-model/subscription/{playerId}")
+    @JsonView(JsonVisibility.Public.class)
     public List<GameModel> getSubscriptedGameModels(@PathVariable String playerId) {
         return gameModelManager.readGameModels(playerId);
     }
