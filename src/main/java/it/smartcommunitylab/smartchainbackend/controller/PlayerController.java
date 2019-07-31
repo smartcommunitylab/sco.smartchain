@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import it.smartcommunitylab.smartchainbackend.bean.Action;
+import it.smartcommunitylab.smartchainbackend.bean.CertificationActionDTO;
 import it.smartcommunitylab.smartchainbackend.bean.Experience;
 import it.smartcommunitylab.smartchainbackend.bean.GameRewardDTO;
 import it.smartcommunitylab.smartchainbackend.bean.PersonageDTO;
@@ -49,6 +50,12 @@ public class PlayerController {
     @PostMapping("api/play/experience")
     public void playExperience(@RequestBody Experience exp) {
         playerManager.playExperience(exp.getPlayerId(), exp);
+    }
+
+    @PostMapping("api/experience/certificate")
+    public void certificateExperienceAction(
+            @RequestBody CertificationActionDTO certification) {
+        playerManager.certificateExperience(certification);
     }
 
     @PostMapping("api/consume/character")

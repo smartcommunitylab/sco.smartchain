@@ -3,6 +3,7 @@ package it.smartcommunitylab.smartchainbackend.model;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.builder.EqualsBuilder;
 
@@ -74,9 +75,22 @@ public class GameModel {
         @JsonView(JsonVisibility.Public.class)
         private String iconUrl;
 
+        @JsonView(JsonVisibility.Public.class)
+        private List<CertificationAction> certificationActions = new ArrayList<>();
+
         @JsonView(JsonVisibility.Internal.class)
         @ApiModelProperty(hidden = true)
         private String gamificationExperienceName;
+
+
+        public CertificationAction getCertificationAction(String certificationId) {
+            return certificationActions.stream()
+                    .filter(c -> c.getCertificationId().equals(certificationId)).findFirst()
+                    .orElseThrow(() -> new IllegalArgumentException(
+                            String.format("certificationId %s not exist in experience %s",
+                                    certificationId, experienceId)));
+        }
+
 
         public String getName() {
             return name;
@@ -118,6 +132,64 @@ public class GameModel {
             this.iconUrl = iconUrl;
         }
 
+        public List<CertificationAction> getCertificationActions() {
+            return certificationActions;
+        }
+
+        public void setCertificationActions(List<CertificationAction> certificationActions) {
+            this.certificationActions = certificationActions;
+        }
+
+
+        public boolean containsAnyCertification(Collection<String> completedCertifications) {
+            for (String certificateId : completedCertifications) {
+                if (certificationActions.stream()
+                        .anyMatch(c -> c.getCertificationId().equals(certificateId))) {
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        public boolean isCompleted(Collection<String> completedCertifications) {
+            List<String> certificationIds = certificationActions.stream()
+                    .map(c -> c.getCertificationId()).collect(Collectors.toList());
+            return completedCertifications.containsAll(certificationIds);
+        }
+
+    }
+
+    public static class CertificationAction {
+        @JsonView(JsonVisibility.Public.class)
+        private String certificationId;
+        @JsonView(JsonVisibility.Public.class)
+        private String name;
+        @JsonView(JsonVisibility.Public.class)
+        private String description;
+
+        public String getCertificationId() {
+            return certificationId;
+        }
+
+        public void setCertificationId(String certificationId) {
+            this.certificationId = certificationId;
+        }
+
+        public String getName() {
+            return name;
+        }
+
+        public void setName(String name) {
+            this.name = name;
+        }
+
+        public String getDescription() {
+            return description;
+        }
+
+        public void setDescription(String description) {
+            this.description = description;
+        }
     }
 
     public static class ModelAction {

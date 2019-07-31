@@ -22,6 +22,8 @@ public class PlayerProfile {
     private List<ModelAction> completedActions = new ArrayList<>();
     private List<ModelExperience> completedExperiences = new ArrayList<>();
 
+    private List<ModelExperience> startedExperiences = new ArrayList<>();
+
 
     public String getPlayerId() {
         return playerId;
@@ -93,6 +95,14 @@ public class PlayerProfile {
 
     public void setCompletedExperiences(List<ModelExperience> completedExperiences) {
         this.completedExperiences = completedExperiences;
+    }
+
+    public List<ModelExperience> getStartedExperiences() {
+        return startedExperiences;
+    }
+
+    public void setStartedExperiences(List<ModelExperience> startedExperiences) {
+        this.startedExperiences = startedExperiences;
     }
 
 

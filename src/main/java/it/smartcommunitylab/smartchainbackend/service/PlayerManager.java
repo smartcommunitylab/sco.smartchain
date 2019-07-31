@@ -10,11 +10,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import it.smartcommunitylab.smartchainbackend.bean.Action;
+import it.smartcommunitylab.smartchainbackend.bean.CertificationActionDTO;
 import it.smartcommunitylab.smartchainbackend.bean.Experience;
 import it.smartcommunitylab.smartchainbackend.bean.GameRewardDTO;
 import it.smartcommunitylab.smartchainbackend.bean.PersonageDTO;
 import it.smartcommunitylab.smartchainbackend.model.Cost;
 import it.smartcommunitylab.smartchainbackend.model.GameModel;
+import it.smartcommunitylab.smartchainbackend.model.GameModel.CertificationAction;
 import it.smartcommunitylab.smartchainbackend.model.GameModel.ModelAction;
 import it.smartcommunitylab.smartchainbackend.model.GameModel.ModelExperience;
 import it.smartcommunitylab.smartchainbackend.model.GameModel.ModelReward;
@@ -96,17 +98,56 @@ public class PlayerManager {
         completeExperience(experience);
         logger.info("Player {} completed experience {} (id: {})", playerId,
                 modelExperience.getName(), modelExperience.getExperienceId());
+    }
 
 
+    public void certificateExperience(CertificationActionDTO certification) {
+        final String gameModelId = certification.getGameModelId();
+        final String playerId = certification.getPlayerId();
+        boolean isSubscribed = gameModelManager.isSubscribed(playerId, gameModelId);
+        if (!isSubscribed) {
+            throw new IllegalArgumentException(
+                    String.format("%s is not subscribed to game %s", playerId, gameModelId));
+        }
+
+        final GameModel model = gameModelManager.getModel(gameModelId);
+        final ModelExperience experience = model.getExperience(certification.getExperienceId());
+        final CertificationAction modelCertification =
+                experience.getCertificationAction(certification.getCertificationId());
+
+        Optional<Subscription> subscription =
+                subscriptionRepo.findById(new CompositeKey(gameModelId, playerId));
+
+        subscription.ifPresent(s -> {
+            if (!s.getCompletedExperiences().contains(experience.getExperienceId())) {
+            if (!s.getCompletedCertifications().contains(certification.getCertificationId())) {
+                s.getCompletedCertifications().add(certification.getCertificationId());
+            }
+            subscriptionRepo.save(s);
+            if (experience.isCompleted(s.getCompletedCertifications())) {
+                Experience exp = new Experience();
+                exp.setId(experience.getExperienceId());
+                exp.setGameId(gameModelId);
+                exp.setPlayerId(playerId);
+                completeExperience(exp);
+                }
+            }
+        });
     }
 
     private void completeExperience(Experience experience) {
        final String gameModelId = experience.getGameId();
        final String playerId = experience.getPlayerId();
+        final GameModel model = gameModelManager.getModel(gameModelId);
         Optional<Subscription> subscription =
                 subscriptionRepo.findById(new CompositeKey(gameModelId, playerId));
         subscription.ifPresent(s -> {
             s.getCompletedExperiences().add(experience.getId());
+            List<CertificationAction> certifications =
+                    model.getExperience(experience.getId()).getCertificationActions();
+            for (CertificationAction certification : certifications) {
+                s.getCompletedCertifications().remove(certification.getCertificationId());
+            }
             subscriptionRepo.save(s);
         });
     }
@@ -175,6 +216,12 @@ public class PlayerManager {
             List<ModelAction> modelActions = model.getActions(s.getCompletedActions());
             profile.setCompletedActions(modelActions);
 
+            List<ModelExperience> experiences = model.getExperiences();
+            for (ModelExperience experience : experiences) {
+                if (experience.containsAnyCertification(s.getCompletedCertifications())) {
+                    profile.getStartedExperiences().add(experience);
+                }
+            }
         });
 
         return profile;

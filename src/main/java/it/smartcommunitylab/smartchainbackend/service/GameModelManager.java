@@ -16,6 +16,7 @@ import it.smartcommunitylab.smartchainbackend.bean.PersonageDTO;
 import it.smartcommunitylab.smartchainbackend.bean.Player;
 import it.smartcommunitylab.smartchainbackend.model.Cost;
 import it.smartcommunitylab.smartchainbackend.model.GameModel;
+import it.smartcommunitylab.smartchainbackend.model.GameModel.CertificationAction;
 import it.smartcommunitylab.smartchainbackend.model.GameModel.ModelAction;
 import it.smartcommunitylab.smartchainbackend.model.GameModel.ModelExperience;
 import it.smartcommunitylab.smartchainbackend.model.GameModel.ModelReward;
@@ -45,7 +46,20 @@ public class GameModelManager {
         gameModel = setActionIds(gameModel);
         gameModel = setExperienceIds(gameModel);
         gameModel = setRewardIds(gameModel);
+        gameModel = setCertificationActionIds(gameModel);
         return gameModelRepo.save(gameModel);
+    }
+
+    private GameModel setCertificationActionIds(GameModel gameModel) {
+        List<ModelExperience> experiences = gameModel.getExperiences();
+        for (ModelExperience experience : experiences) {
+            for (CertificationAction certification : experience.getCertificationActions()) {
+                if (StringUtils.isBlank(certification.getCertificationId())) {
+                    certification.setCertificationId(UUID.randomUUID().toString());
+                }
+            }
+        }
+        return gameModel;
     }
 
     private GameModel setActionIds(GameModel gameModel) {
