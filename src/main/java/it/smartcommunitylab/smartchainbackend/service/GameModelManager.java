@@ -25,6 +25,7 @@ import it.smartcommunitylab.smartchainbackend.model.Subscription;
 import it.smartcommunitylab.smartchainbackend.model.Subscription.CompositeKey;
 import it.smartcommunitylab.smartchainbackend.repository.GameModelRepository;
 import it.smartcommunitylab.smartchainbackend.repository.SubscriptionRepository;
+import it.smartcommunitylab.smartchainbackend.service.GEHelper.GEHelperException;
 
 @Service
 public class GameModelManager {
@@ -166,7 +167,13 @@ public class GameModelManager {
             gamificationPlayer.setComponents(player.getComponents());
 
             // create on gamification engine
+            try {
             gamificationEngineHelper.subscribe(gamificationPlayer);
+            } catch (GEHelperException e) {
+                if (e.getMessage() == null || !e.getMessage().contains("Bad Request")) {
+                    throw e;
+                }
+            }
             logger.info("Player {} subscribed to gamification game {}",
                     gamificationPlayer.getPlayerId(), gamificationPlayer.getGameId());
 

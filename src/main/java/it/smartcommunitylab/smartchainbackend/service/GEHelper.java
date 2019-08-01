@@ -66,7 +66,7 @@ public class GEHelper {
                     subscriber.getGameId(),
                     playerState);
         } catch (ApiException e) {
-            logger.error("Exception calling gamification-engine API");
+            logger.error("Exception calling gamification-engine API: {}", e.getMessage());
             throw new GEHelperException(e);
         }
     }
