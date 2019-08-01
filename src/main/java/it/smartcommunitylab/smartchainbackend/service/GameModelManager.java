@@ -155,6 +155,7 @@ public class GameModelManager {
         if (!existentSubscription.isPresent()) {
             Subscription subscription = new Subscription();
             subscription.setId(subscriptionId);
+            subscription.setComponents(player.getComponents());
             subscriptionRepo.save(subscription);
             logger.info("Player {} subscribed to game model {}", subscriptionId.getPlayerId(),
                     subscriptionId.getPlayerId());

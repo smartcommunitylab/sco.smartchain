@@ -11,7 +11,7 @@ public class Subscription {
     @Id
     private CompositeKey id;
 
-
+    private int components = 1;
     private List<String> completedExperiences = new ArrayList<>();
     private List<String> completedActions = new ArrayList<>();
     private List<String> completedCertifications = new ArrayList<>();
@@ -76,6 +76,14 @@ public class Subscription {
 
     public void setCompletedCertifications(List<String> completedCertifications) {
         this.completedCertifications = completedCertifications;
+    }
+
+    public int getComponents() {
+        return components;
+    }
+
+    public void setComponents(int components) {
+        this.components = components;
     }
 
 
