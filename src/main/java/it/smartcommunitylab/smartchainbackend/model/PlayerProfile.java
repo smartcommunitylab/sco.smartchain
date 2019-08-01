@@ -3,8 +3,8 @@ package it.smartcommunitylab.smartchainbackend.model;
 import java.util.ArrayList;
 import java.util.List;
 
+import it.smartcommunitylab.smartchainbackend.bean.PlayerExperience;
 import it.smartcommunitylab.smartchainbackend.model.GameModel.ModelAction;
-import it.smartcommunitylab.smartchainbackend.model.GameModel.ModelExperience;
 import it.smartcommunitylab.smartchainbackend.model.GameModel.ModelReward;
 import it.smartcommunitylab.smartchainbackend.model.GameModel.Personage;
 
@@ -20,9 +20,9 @@ public class PlayerProfile {
     private List<ModelReward> usableRewards = new ArrayList<>();
 
     private List<ModelAction> completedActions = new ArrayList<>();
-    private List<ModelExperience> completedExperiences = new ArrayList<>();
+    private List<PlayerExperience> completedExperiences = new ArrayList<>();
 
-    private List<ModelExperience> startedExperiences = new ArrayList<>();
+    private List<PlayerExperience> startedExperiences = new ArrayList<>();
 
 
     public String getPlayerId() {
@@ -89,19 +89,19 @@ public class PlayerProfile {
         this.completedActions = completedActions;
     }
 
-    public List<ModelExperience> getCompletedExperiences() {
+    public List<PlayerExperience> getCompletedExperiences() {
         return completedExperiences;
     }
 
-    public void setCompletedExperiences(List<ModelExperience> completedExperiences) {
+    public void setCompletedExperiences(List<PlayerExperience> completedExperiences) {
         this.completedExperiences = completedExperiences;
     }
 
-    public List<ModelExperience> getStartedExperiences() {
+    public List<PlayerExperience> getStartedExperiences() {
         return startedExperiences;
     }
 
-    public void setStartedExperiences(List<ModelExperience> startedExperiences) {
+    public void setStartedExperiences(List<PlayerExperience> startedExperiences) {
         this.startedExperiences = startedExperiences;
     }
 

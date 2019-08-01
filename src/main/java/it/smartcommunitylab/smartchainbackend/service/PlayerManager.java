@@ -14,6 +14,7 @@ import it.smartcommunitylab.smartchainbackend.bean.CertificationActionDTO;
 import it.smartcommunitylab.smartchainbackend.bean.Experience;
 import it.smartcommunitylab.smartchainbackend.bean.GameRewardDTO;
 import it.smartcommunitylab.smartchainbackend.bean.PersonageDTO;
+import it.smartcommunitylab.smartchainbackend.bean.PlayerExperience;
 import it.smartcommunitylab.smartchainbackend.model.Cost;
 import it.smartcommunitylab.smartchainbackend.model.GameModel;
 import it.smartcommunitylab.smartchainbackend.model.GameModel.CertificationAction;
@@ -211,7 +212,7 @@ public class PlayerManager {
         subscription.ifPresent(s -> {
             List<ModelExperience> modelExperiences =
                     model.getExperiences(s.getCompletedExperiences());
-            profile.setCompletedExperiences(modelExperiences);
+            profile.setCompletedExperiences(convertExperience(modelExperiences, true));
 
             List<ModelAction> modelActions = model.getActions(s.getCompletedActions());
             profile.setCompletedActions(modelActions);
@@ -219,12 +220,19 @@ public class PlayerManager {
             List<ModelExperience> experiences = model.getExperiences();
             for (ModelExperience experience : experiences) {
                 if (experience.containsAnyCertification(s.getCompletedCertifications())) {
-                    profile.getStartedExperiences().add(experience);
+                    profile.getStartedExperiences()
+                            .add(new PlayerExperience(experience, s.getCompletedCertifications()));
                 }
             }
         });
 
         return profile;
+    }
+
+    private List<PlayerExperience> convertExperience(List<ModelExperience> experiences,
+            boolean completed) {
+        return experiences.stream().map(e -> new PlayerExperience(e, completed))
+                .collect(Collectors.toList());
     }
 
     private List<Personage> usablePersonages(List<Personage> personages, PlayerProfile profile) {
