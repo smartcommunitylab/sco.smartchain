@@ -3,25 +3,35 @@ package it.smartcommunitylab.smartchainbackend.model;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonView;
+
 import it.smartcommunitylab.smartchainbackend.bean.PlayerExperience;
+import it.smartcommunitylab.smartchainbackend.controller.JsonVisibility;
 import it.smartcommunitylab.smartchainbackend.model.GameModel.ModelAction;
 import it.smartcommunitylab.smartchainbackend.model.GameModel.ModelReward;
 import it.smartcommunitylab.smartchainbackend.model.GameModel.Personage;
 
 public class PlayerProfile {
-
+    @JsonView(JsonVisibility.Public.class)
     private String playerId;
+    @JsonView(JsonVisibility.Public.class)
     private String gameId;
+    @JsonView(JsonVisibility.Public.class)
     private double territoryScore;
+    @JsonView(JsonVisibility.Public.class)
     private double cultureScore;
+    @JsonView(JsonVisibility.Public.class)
     private double sportScore;
 
+    @JsonView(JsonVisibility.Public.class)
     private List<Personage> usablePersonages = new ArrayList<>();
+    @JsonView(JsonVisibility.Public.class)
     private List<ModelReward> usableRewards = new ArrayList<>();
-
+    @JsonView(JsonVisibility.Public.class)
     private List<ModelAction> completedActions = new ArrayList<>();
+    @JsonView(JsonVisibility.Public.class)
     private List<PlayerExperience> completedExperiences = new ArrayList<>();
-
+    @JsonView(JsonVisibility.Public.class)
     private List<PlayerExperience> startedExperiences = new ArrayList<>();
 
 

@@ -7,6 +7,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.fasterxml.jackson.annotation.JsonView;
+
 import it.smartcommunitylab.smartchainbackend.bean.Action;
 import it.smartcommunitylab.smartchainbackend.bean.CertificationActionDTO;
 import it.smartcommunitylab.smartchainbackend.bean.Experience;
@@ -37,6 +39,7 @@ public class PlayerController {
     }
 
     @GetMapping("api/profile/{gameModelId}/{playerId}")
+    @JsonView(JsonVisibility.Public.class)
     public PlayerProfile getProfile(@PathVariable String gameModelId,
             @PathVariable String playerId) {
         return playerManager.getProfile(playerId, gameModelId);
