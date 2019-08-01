@@ -41,21 +41,6 @@ public class PlayerManager {
 
     private static final Logger logger = LogManager.getLogger(PlayerManager.class);
 
-    // public void subscribe(Player subscriber) {
-    //
-    // Validator.throwIfInvalid(subscriber.getGameId(), "gameId in subscriber cannot be blank");
-    // Validator.throwIfInvalid(subscriber.getPlayerId(),
-    // "playerId in subscriber cannot be blank");
-    //
-    // final String gamificationId = gameModelManager.getGamificationId(subscriber.getGameId());
-    // subscriber.setGameId(gamificationId);
-    // // subscribe
-    // gamificationEngineHelper.subscribe(subscriber);
-    //
-    // // save the subscription
-    //
-    // }
-
     public void playAction(String playerId, Action action) {
         final String gameModelId = action.getGameId();
         boolean isSubscribed = gameModelManager.isSubscribed(playerId, gameModelId);

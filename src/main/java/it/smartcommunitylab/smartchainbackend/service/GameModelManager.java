@@ -169,8 +169,6 @@ public class GameModelManager {
             logger.info("Player {} subscribed to gamification game {}",
                     gamificationPlayer.getPlayerId(), gamificationPlayer.getGameId());
 
-            // TODO create smart contract
-
             return subscription;
         } else {
             return existentSubscription.get();
