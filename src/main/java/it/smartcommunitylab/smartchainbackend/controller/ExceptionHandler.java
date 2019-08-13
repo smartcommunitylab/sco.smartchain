@@ -22,6 +22,8 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.web.bind.annotation.ControllerAdvice;
 
+import it.smartcommunitylab.smartchainbackend.service.UnauthorizedException;
+
 @ControllerAdvice
 public class ExceptionHandler {
 
@@ -29,4 +31,9 @@ public class ExceptionHandler {
 	public void handleIllegalArgument(HttpServletResponse res, Exception e) throws IOException {
 		res.sendError(HttpServletResponse.SC_BAD_REQUEST, e.getMessage());
 	}
+
+    @org.springframework.web.bind.annotation.ExceptionHandler(UnauthorizedException.class)
+    public void handleUnauthorized(HttpServletResponse res, Exception e) throws IOException {
+        res.sendError(HttpServletResponse.SC_UNAUTHORIZED, e.getMessage());
+    }
 }

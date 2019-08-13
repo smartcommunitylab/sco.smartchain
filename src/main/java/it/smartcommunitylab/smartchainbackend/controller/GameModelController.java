@@ -2,6 +2,8 @@ package it.smartcommunitylab.smartchainbackend.controller;
 
 import java.util.List;
 
+import javax.servlet.http.HttpServletRequest;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -14,6 +16,7 @@ import it.smartcommunitylab.smartchainbackend.model.GameModel.ModelAction;
 import it.smartcommunitylab.smartchainbackend.model.GameModel.ModelExperience;
 import it.smartcommunitylab.smartchainbackend.model.GameModel.ModelReward;
 import it.smartcommunitylab.smartchainbackend.model.GameModel.Personage;
+import it.smartcommunitylab.smartchainbackend.service.AuthManager;
 import it.smartcommunitylab.smartchainbackend.service.GameModelManager;
 
 @RestController
@@ -21,6 +24,10 @@ public class GameModelController {
 
     @Autowired
     private GameModelManager gameModelManager;
+
+
+    @Autowired
+    private AuthManager authManager;
 
     @GetMapping("/api/game-model/{gameModelId}/action")
     @JsonView(JsonVisibility.Public.class)
@@ -52,7 +59,9 @@ public class GameModelController {
 
     @GetMapping("/api/game-model/subscription/{playerId}")
     @JsonView(JsonVisibility.Public.class)
-    public List<GameModel> getSubscriptedGameModels(@PathVariable String playerId) {
+    public List<GameModel> getSubscriptedGameModels(@PathVariable String playerId,
+            HttpServletRequest request) {
+        authManager.check(request, playerId);
         return gameModelManager.readGameModels(playerId);
     }
 
