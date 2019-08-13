@@ -60,7 +60,8 @@ public class PlayerManager {
         gamificationAction.setParams(action.getParams());
         gamificationEngineHelper.action(playerId, gamificationAction);
         completeAction(action);
-        logger.info("Player {} completed action {} (id: {})", playerId, modelAction.getName(),
+        logger.info("GameModel {} Player {} completed action {} (id: {})", gameModelId, playerId,
+                modelAction.getName(),
                 modelAction.getActionId());
     }
 
@@ -79,7 +80,8 @@ public class PlayerManager {
             final GameModel model = gameModelManager.getModel(gameModelId);
             final ModelExperience modelExperience = model.getExperience(experience.getId());
             if (s.getCompletedExperiences().contains(experience.getId())) {
-                logger.warn("Player {} already completed experience {} (id: {})", playerId,
+                logger.warn("GameModel {} Player {} already completed experience {} (id: {})",
+                        gameModelId, playerId,
                         modelExperience.getName(), modelExperience.getExperienceId());
             } else {
                 final String gamificationId = model.getGamificationId();
@@ -90,7 +92,8 @@ public class PlayerManager {
                 gamificationExperience.setId(gamificationExperienceId);
                 gamificationEngineHelper.experience(playerId, gamificationExperience);
                 completeExperience(experience);
-                logger.info("Player {} completed experience {} (id: {})", playerId,
+                logger.info("GameModel {} Player {} completed experience {} (id: {})", gameModelId,
+                        playerId,
                         modelExperience.getName(), modelExperience.getExperienceId());
             }
         });
@@ -108,25 +111,38 @@ public class PlayerManager {
 
         final GameModel model = gameModelManager.getModel(gameModelId);
         final ModelExperience experience = model.getExperience(certification.getExperienceId());
-        final CertificationAction modelCertification =
-                experience.getCertificationAction(certification.getCertificationId());
+
+        // used to check if certification exists, otherwise is thrown a runtime exception
+        experience.getCertificationAction(certification.getCertificationId());
 
         Optional<Subscription> subscription =
                 subscriptionRepo.findById(new CompositeKey(gameModelId, playerId));
 
         subscription.ifPresent(s -> {
             if (!s.getCompletedExperiences().contains(experience.getExperienceId())) {
-            if (!s.getCompletedCertifications().contains(certification.getCertificationId())) {
-                s.getCompletedCertifications().add(certification.getCertificationId());
-            }
-            subscriptionRepo.save(s);
-            if (experience.isCompleted(s.getCompletedCertifications())) {
-                Experience exp = new Experience();
-                exp.setId(experience.getExperienceId());
-                exp.setGameId(gameModelId);
-                exp.setPlayerId(playerId);
-                    playExperience(playerId, exp);
+                if (!s.getCompletedCertifications().contains(certification.getCertificationId())) {
+                    s.getCompletedCertifications().add(certification.getCertificationId());
+                    subscriptionRepo.save(s);
+                    logger.info(
+                            "GameModel {} Player {} certificates action {} of experience {} (id: {})",
+                            gameModelId, playerId, certification.getCertificationId(),
+                            experience.getName(), experience.getExperienceId());
+                    if (experience.isCompleted(s.getCompletedCertifications())) {
+                        Experience exp = new Experience();
+                        exp.setId(experience.getExperienceId());
+                        exp.setGameId(gameModelId);
+                        exp.setPlayerId(playerId);
+                        playExperience(playerId, exp);
+                    }
+                } else {
+                    logger.warn(
+                            "GameModel {} Player {} already certificates action {} of experience {} (id: {})",
+                            gameModelId, playerId, certification.getCertificationId(),
+                            experience.getName(), experience.getExperienceId());
                 }
+            } else {
+                logger.warn("GameModel {} Player {} already completed experience {} (id: {})",
+                        gameModelId, playerId, experience.getName(), experience.getExperienceId());
             }
         });
     }
@@ -166,11 +182,15 @@ public class PlayerManager {
             throw new IllegalArgumentException(
                     String.format("%s is not subscribed to game %s", playerId, gameModelId));
         }
-        final String gamificationId = gameModelManager.getGamificationId(gameModelId);
-        Cost personageCost = gameModelManager.getPersonageCost(personage);
+        final GameModel model = gameModelManager.getModel(gameModelId);
+        final String gamificationId = model.getGamificationId();
+        final Personage modelPersonage = model.getPersonage(personage.getId());
+        Cost personageCost = modelPersonage.getCost();
         GamificationPersonage gamificationPersonage =
                 new GamificationPersonage(gamificationId, personage, personageCost);
         gamificationEngineHelper.consumePersonage(playerId, gamificationPersonage);
+        logger.info("GameModel {} Player {} consumes character {} (id: {})", gameModelId, playerId,
+                modelPersonage.getName(), modelPersonage.getPersonageId());
     }
 
     public void consumeReward(String playerId, GameRewardDTO reward) {
@@ -181,10 +201,14 @@ public class PlayerManager {
                     String.format("%s is not subscribed to game %s", playerId, gameModelId));
         }
 
-        final String gamificationId = gameModelManager.getGamificationId(gameModelId);
-        Cost cost = gameModelManager.getRewardCost(reward);
+        final GameModel model = gameModelManager.getModel(gameModelId);
+        final String gamificationId = model.getGamificationId();
+        final ModelReward modelReward = model.getReward(reward.getId());
+        Cost cost = modelReward.getCost();
         GamificationReward gamificationReward = new GamificationReward(gamificationId, cost);
         gamificationEngineHelper.consumeReward(playerId, gamificationReward);
+        logger.info("GameModel {} Player {} consumes reward {} (id: {})", gameModelId, playerId,
+                modelReward.getName(), modelReward.getRewardId());
     }
 
     public PlayerProfile getProfile(String playerId, String gameModelId) {

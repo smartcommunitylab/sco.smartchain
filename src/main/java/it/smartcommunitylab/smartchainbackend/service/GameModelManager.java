@@ -133,6 +133,8 @@ public class GameModelManager {
             gamificationPlayer.setPlayerId(unsubscriber.getPlayerId());
             gamificationEngineHelper.unsubscribe(gamificationPlayer);
             subscriptionRepo.delete(subscription);
+            logger.info("Player {} unsubscribed from game model {}", subscriptionId.getPlayerId(),
+                    subscriptionId.getGameId());
             return subscription;
         }
 
@@ -159,7 +161,7 @@ public class GameModelManager {
             subscription.setComponents(player.getComponents());
             subscriptionRepo.save(subscription);
             logger.info("Player {} subscribed to game model {}", subscriptionId.getPlayerId(),
-                    subscriptionId.getPlayerId());
+                    subscriptionId.getGameId());
             final String gamificationId = existGameModel.get().getGamificationId();
             Player gamificationPlayer = new Player();
             gamificationPlayer.setGameId(gamificationId);
@@ -179,6 +181,8 @@ public class GameModelManager {
 
             return subscription;
         } else {
+            logger.warn("Player {} already subscribed to game model {}",
+                    subscriptionId.getPlayerId(), subscriptionId.getGameId());
             return existentSubscription.get();
         }
 

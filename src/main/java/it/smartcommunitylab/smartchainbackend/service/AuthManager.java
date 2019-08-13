@@ -54,6 +54,8 @@ public class AuthManager implements AuthService {
     public void check(HttpServletRequest request, String playerId) {
         BasicProfile profile = getBasicProfile(request);
         if (profile == null || !playerId.equals(profile.getUserId())) {
+            logger.warn("Player {} tries to play as player {}",
+                    profile == null ? null : profile.getUserId(), playerId);
             throw new UnauthorizedException(
                     String.format("token not authorized for player %s", playerId));
         }

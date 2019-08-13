@@ -31,6 +31,20 @@ public class GameModel {
     private List<ModelExperience> experiences = new ArrayList<>();
 
 
+
+    public Personage getPersonage(String personageId) {
+        return personages.stream().filter(p -> p.personageId.equals(personageId)).findFirst()
+                .orElseThrow(() -> new IllegalArgumentException(String
+                        .format("personageId  %s not exist in game-model %s", personageId, id)));
+    }
+
+    public ModelReward getReward(String rewardId) {
+        return rewards.stream().filter(r -> r.rewardId.equals(rewardId)).findFirst()
+                .orElseThrow(() -> new IllegalArgumentException(
+                        String.format("rewardId  %s not exist in game-model %s", rewardId, id)));
+    }
+
+
     public ModelExperience getExperience(String experienceId) {
         return experiences.stream().filter(e -> experienceId.equals(e.getExperienceId()))
                 .findFirst()
