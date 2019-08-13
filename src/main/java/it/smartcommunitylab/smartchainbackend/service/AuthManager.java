@@ -8,14 +8,16 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Service;
+import org.springframework.context.annotation.Profile;
+import org.springframework.stereotype.Component;
 
 import it.smartcommunitylab.aac.AACException;
 import it.smartcommunitylab.aac.AACProfileService;
 import it.smartcommunitylab.aac.model.BasicProfile;
 
-@Service
-public class AuthManager {
+@Component
+@Profile("sec")
+public class AuthManager implements AuthService {
 
     private static final Logger logger = LogManager.getLogger(AuthManager.class);
 
@@ -48,6 +50,7 @@ public class AuthManager {
 
 
 
+    @Override
     public void check(HttpServletRequest request, String playerId) {
         BasicProfile profile = getBasicProfile(request);
         if (profile == null || !playerId.equals(profile.getUserId())) {

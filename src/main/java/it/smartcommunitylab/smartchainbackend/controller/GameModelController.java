@@ -16,7 +16,7 @@ import it.smartcommunitylab.smartchainbackend.model.GameModel.ModelAction;
 import it.smartcommunitylab.smartchainbackend.model.GameModel.ModelExperience;
 import it.smartcommunitylab.smartchainbackend.model.GameModel.ModelReward;
 import it.smartcommunitylab.smartchainbackend.model.GameModel.Personage;
-import it.smartcommunitylab.smartchainbackend.service.AuthManager;
+import it.smartcommunitylab.smartchainbackend.service.AuthService;
 import it.smartcommunitylab.smartchainbackend.service.GameModelManager;
 
 @RestController
@@ -27,7 +27,7 @@ public class GameModelController {
 
 
     @Autowired
-    private AuthManager authManager;
+    private AuthService authService;
 
     @GetMapping("/api/game-model/{gameModelId}/action")
     @JsonView(JsonVisibility.Public.class)
@@ -61,7 +61,7 @@ public class GameModelController {
     @JsonView(JsonVisibility.Public.class)
     public List<GameModel> getSubscriptedGameModels(@PathVariable String playerId,
             HttpServletRequest request) {
-        authManager.check(request, playerId);
+        authService.check(request, playerId);
         return gameModelManager.readGameModels(playerId);
     }
 
