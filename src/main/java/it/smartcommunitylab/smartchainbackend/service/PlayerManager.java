@@ -72,18 +72,28 @@ public class PlayerManager {
                     String.format("%s is not subscribed to game %s", playerId, gameModelId));
         }
 
-        final GameModel model = gameModelManager.getModel(gameModelId);
-        final ModelExperience modelExperience = model.getExperience(experience.getId());
-        final String gamificationId = model.getGamificationId();
-        final String gamificationExperienceId = 
-                gameModelManager.getGamificationExperienceId(gameModelId, experience.getId());
-        Experience gamificationExperience = new Experience();
-        gamificationExperience.setGameId(gamificationId);
-        gamificationExperience.setId(gamificationExperienceId);
-        gamificationEngineHelper.experience(playerId, gamificationExperience);
-        completeExperience(experience);
-        logger.info("Player {} completed experience {} (id: {})", playerId,
-                modelExperience.getName(), modelExperience.getExperienceId());
+        Optional<Subscription> subscription =
+                subscriptionRepo.findById(new CompositeKey(gameModelId, playerId));
+
+        subscription.ifPresent(s -> {
+            final GameModel model = gameModelManager.getModel(gameModelId);
+            final ModelExperience modelExperience = model.getExperience(experience.getId());
+            if (s.getCompletedExperiences().contains(experience.getId())) {
+                logger.warn("Player {} already completed experience {} (id: {})", playerId,
+                        modelExperience.getName(), modelExperience.getExperienceId());
+            } else {
+                final String gamificationId = model.getGamificationId();
+                final String gamificationExperienceId = gameModelManager
+                        .getGamificationExperienceId(gameModelId, experience.getId());
+                Experience gamificationExperience = new Experience();
+                gamificationExperience.setGameId(gamificationId);
+                gamificationExperience.setId(gamificationExperienceId);
+                gamificationEngineHelper.experience(playerId, gamificationExperience);
+                completeExperience(experience);
+                logger.info("Player {} completed experience {} (id: {})", playerId,
+                        modelExperience.getName(), modelExperience.getExperienceId());
+            }
+        });
     }
 
 
