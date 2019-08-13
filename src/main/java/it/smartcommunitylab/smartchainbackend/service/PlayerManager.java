@@ -115,7 +115,7 @@ public class PlayerManager {
                 exp.setId(experience.getExperienceId());
                 exp.setGameId(gameModelId);
                 exp.setPlayerId(playerId);
-                completeExperience(exp);
+                    playExperience(playerId, exp);
                 }
             }
         });
