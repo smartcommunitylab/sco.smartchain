@@ -2,11 +2,10 @@ FROM maven:3-jdk-8 AS mvn
 WORKDIR /tmp
 COPY ./pom.xml /tmp
 COPY ./src /tmp/src
-RUN ls -la
 RUN mvn dependency:go-offline
 RUN mvn install -DskipTests
 
-FROM adoptopenjdk/openjdk11:alpine
+FROM adoptopenjdk/openjdk8:alpine
 ENV FOLDER=/tmp/target
 ARG VER=0.1
 ENV APP=smart-chain-backend-1.0.0.jar
@@ -26,4 +25,4 @@ RUN chown ${USER}:${USER_GROUP} /home/${USER}/app
 COPY --from=mvn --chown=smartchain:smartchain ${FOLDER}/${APP} /home/${USER}/app/smart-chain.jar
 
 USER smartchain
-CMD ["java", "-XX:MaxRAMPercentage=50", "-jar", "smartchain.jar"]
+CMD ["java", "-jar", "smart-chain.jar"]
