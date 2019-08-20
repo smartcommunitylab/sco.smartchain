@@ -23,6 +23,8 @@ public class PlayerProfile {
     @JsonView(JsonVisibility.Public.class)
     private double sportScore;
 
+
+
     @JsonView(JsonVisibility.Public.class)
     private List<Personage> usablePersonages = new ArrayList<>();
     @JsonView(JsonVisibility.Public.class)
@@ -114,6 +116,5 @@ public class PlayerProfile {
     public void setStartedExperiences(List<PlayerExperience> startedExperiences) {
         this.startedExperiences = startedExperiences;
     }
-
 
 }

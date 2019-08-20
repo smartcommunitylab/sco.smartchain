@@ -26,6 +26,8 @@ import it.smartcommunitylab.smartchainbackend.model.PlayerProfile;
 import it.smartcommunitylab.smartchainbackend.model.Subscription;
 import it.smartcommunitylab.smartchainbackend.model.Subscription.CompositeKey;
 import it.smartcommunitylab.smartchainbackend.repository.SubscriptionRepository;
+import it.smartcommunitylab.smartchainbackend.service.GEHelper.RankingType;
+import it.smartcommunitylab.smartchainbackend.service.Rankings.Ranking;
 
 @Service
 public class PlayerManager {
@@ -247,6 +249,19 @@ public class PlayerManager {
 
         return profile;
     }
+
+    public Rankings getRankings(String playerId, String gameModelId) {
+        final String gamificationId = gameModelManager.getGamificationId(gameModelId);
+        final Ranking territoryRanking = gamificationEngineHelper.getRanking(gamificationId,
+                playerId, RankingType.TERRITORY);
+        final Ranking cultureRanking =
+                gamificationEngineHelper.getRanking(gamificationId, playerId, RankingType.CULTURE);
+        final Ranking sportRanking =
+                gamificationEngineHelper.getRanking(gamificationId, playerId, RankingType.SPORT);
+
+        return new Rankings(territoryRanking, cultureRanking, sportRanking);
+    }
+
 
     private List<PlayerExperience> convertExperience(List<ModelExperience> experiences,
             boolean completed) {

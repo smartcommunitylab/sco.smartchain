@@ -21,6 +21,7 @@ import it.smartcommunitylab.smartchainbackend.model.PlayerProfile;
 import it.smartcommunitylab.smartchainbackend.service.AuthService;
 import it.smartcommunitylab.smartchainbackend.service.GameModelManager;
 import it.smartcommunitylab.smartchainbackend.service.PlayerManager;
+import it.smartcommunitylab.smartchainbackend.service.Rankings;
 
 @RestController
 public class PlayerController {
@@ -52,6 +53,14 @@ public class PlayerController {
             @PathVariable String playerId, HttpServletRequest request) {
         authService.check(request, playerId);
         return playerManager.getProfile(playerId, gameModelId);
+    }
+
+    @GetMapping("api/ranking/{gameModelId}/{playerId}")
+    @JsonView(JsonVisibility.Public.class)
+    public Rankings getRankings(@PathVariable String gameModelId, @PathVariable String playerId,
+            HttpServletRequest request) {
+        authService.check(request, playerId);
+        return playerManager.getRankings(playerId, gameModelId);
     }
 
     @PostMapping("api/play/action")

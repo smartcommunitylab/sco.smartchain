@@ -3,6 +3,7 @@ package it.smartcommunitylab.smartchainbackend.service;
 import java.io.IOException;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Set;
 
 import javax.annotation.PostConstruct;
@@ -14,8 +15,11 @@ import org.springframework.stereotype.Component;
 
 import it.smartcommunitylab.ApiClient;
 import it.smartcommunitylab.ApiException;
+import it.smartcommunitylab.basic.api.ClassificationControllerApi;
 import it.smartcommunitylab.basic.api.ExecutionControllerApi;
 import it.smartcommunitylab.basic.api.PlayerControllerApi;
+import it.smartcommunitylab.model.ClassificationBoard;
+import it.smartcommunitylab.model.ClassificationPosition;
 import it.smartcommunitylab.model.PlayerStateDTO;
 import it.smartcommunitylab.model.ext.ExecutionDataDTO;
 import it.smartcommunitylab.model.ext.GameConcept;
@@ -25,12 +29,11 @@ import it.smartcommunitylab.smartchainbackend.bean.Experience;
 import it.smartcommunitylab.smartchainbackend.bean.Player;
 import it.smartcommunitylab.smartchainbackend.config.GEProps;
 import it.smartcommunitylab.smartchainbackend.model.PlayerProfile;
+import it.smartcommunitylab.smartchainbackend.service.Rankings.Position;
+import it.smartcommunitylab.smartchainbackend.service.Rankings.Ranking;
 
 @Component
 public class GEHelper {
-
-
-
     private static final Logger logger = LogManager.getLogger(GEHelper.class);
 
     private static final String componentsCustomField = "components";
@@ -42,6 +45,50 @@ public class GEHelper {
     private static final String territoryScoreName = "total_territory";
     private static final String cultureScoreName = "total_culture";
     private static final String sportScoreName = "total_sport";
+
+    private static final String territoryDailyClassificationId = "daily classification territory";
+    private static final String territoryWeeklyClassificationId = "weekly classification territory";
+    private static final String territoryMonthlyClassificationId =
+            "monthly classification territory";
+    private static final String cultureDailyClassificationId = "daily classification culture";
+    private static final String cultureWeeklyClassificationId = "weekly classification culture";
+    private static final String cultureMonthlyClassificationId = "monthly classification culture";
+    private static final String sportDailyClassificationId = "daily classification sport";
+    private static final String sportWeeklyClassificationId = "weekly classification sport";
+    private static final String sportMonthlyClassificationId = "monthly classification sport";
+
+
+    public enum RankingType {
+        TERRITORY(territoryDailyClassificationId, territoryWeeklyClassificationId,
+                territoryMonthlyClassificationId), CULTURE(cultureDailyClassificationId,
+                        cultureWeeklyClassificationId,
+                        cultureMonthlyClassificationId), SPORT(sportDailyClassificationId,
+                                sportWeeklyClassificationId, sportMonthlyClassificationId);
+
+        private String dailyClassificationId;
+        private String weeklyClassificationId;
+        private String monthlyClassificationId;
+
+        private RankingType(String dailyClassificationId, String weeklyClassificationId,
+                String monthlyClassificationId) {
+            this.dailyClassificationId = dailyClassificationId;
+            this.weeklyClassificationId = weeklyClassificationId;
+            this.monthlyClassificationId = monthlyClassificationId;
+        }
+
+        public String getDailyClassificationId() {
+            return dailyClassificationId;
+        }
+
+        public String getWeeklyClassificationId() {
+            return weeklyClassificationId;
+        }
+
+        public String getMonthlyClassificationId() {
+            return monthlyClassificationId;
+        }
+    }
+
 
     @Autowired
     private GEProps gamificationEngineProps;
@@ -98,6 +145,53 @@ public class GEHelper {
         profile.setSportScore(extractScore(sportScoreName, state));
         return profile;
     }
+
+
+    public Ranking getRanking(String gamificationId, String playerId, RankingType type) {
+        Ranking ranking = new Ranking();
+        ranking.setDaily(getPosition(gamificationId, playerId, type.getDailyClassificationId()));
+        ranking.setWeekly(getPosition(gamificationId, playerId, type.getWeeklyClassificationId()));
+        ranking.setMonthly(
+                getPosition(gamificationId, playerId, type.getMonthlyClassificationId()));
+        return ranking;
+    }
+
+    private Position getPosition(String gamificationId, String playerId, String classificationId) {
+        Position position = new Position(0, 0);
+        try {
+            position = getPosition(playerId,
+                    getBoard(gamificationId, classificationId));
+        } catch (GEHelperException e) {
+            logger.warn("Exception reading classification board {} of gamification game {}",
+                    classificationId, gamificationId);
+        }
+        return position;
+    }
+
+    private Position getPosition(String playerId, ClassificationBoard board) {
+        final List<ClassificationPosition> positions = board.getBoard();
+        int position = 1;
+        for (ClassificationPosition p : positions) {
+            if (p.getPlayerId().equals(playerId)) {
+                return new Position(position, p.getScore());
+            }
+            position++;
+        }
+        return new Position(0, 0);
+
+    }
+    private ClassificationBoard getBoard(String gamificationId, String classificationId) {
+        ClassificationBoard board = null;
+        try {
+            board = new ClassificationControllerApi(apiClient).getIncrementalClassificationUsingGET(
+                    gamificationId, classificationId, System.currentTimeMillis(), -1, -1, -1);
+        } catch (ApiException e) {
+            logger.error("Exception calling gamification-engine API");
+            throw new GEHelperException(e);
+        }
+        return board;
+    }
+
 
     private double extractScore(String scoreName, PlayerStateDTO state) {
         Set<GameConcept> scores = state.getState().get("PointConcept");
