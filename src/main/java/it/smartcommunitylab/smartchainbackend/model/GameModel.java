@@ -30,6 +30,7 @@ public class GameModel {
     @JsonView(JsonVisibility.Public.class)
     private List<ModelExperience> experiences = new ArrayList<>();
 
+    private List<Challenge> challenges = new ArrayList<>();
 
 
     public Personage getPersonage(String personageId) {
@@ -74,6 +75,63 @@ public class GameModel {
         return actions.stream().filter(e -> actionId.equals(e.getActionId())).findFirst()
                 .orElseThrow(() -> new IllegalArgumentException(
                         String.format("actionId  %s not exist in game-model %s", actionId, id)));
+    }
+
+    public static class Challenge {
+        @JsonView(JsonVisibility.Public.class)
+        private String challengeId;
+        @JsonView(JsonVisibility.Public.class)
+        private String name;
+        @JsonView(JsonVisibility.Public.class)
+        private String description;
+        @JsonView(JsonVisibility.Public.class)
+        private String iconUrl;
+
+        @JsonView(JsonVisibility.Internal.class)
+        @ApiModelProperty(hidden = true)
+        private String gamificationType;
+
+        public String getChallengeId() {
+            return challengeId;
+        }
+
+        public void setChallengeId(String challengeId) {
+            this.challengeId = challengeId;
+        }
+
+        public String getName() {
+            return name;
+        }
+
+        public void setName(String name) {
+            this.name = name;
+        }
+
+        public String getDescription() {
+            return description;
+        }
+
+        public void setDescription(String description) {
+            this.description = description;
+        }
+
+        public String getIconUrl() {
+            return iconUrl;
+        }
+
+        public void setIconUrl(String iconUrl) {
+            this.iconUrl = iconUrl;
+        }
+
+        public String getGamificationType() {
+            return gamificationType;
+        }
+
+        public void setGamificationType(String gamificationType) {
+            this.gamificationType = gamificationType;
+        }
+
+
     }
 
     public static class ModelExperience {
@@ -449,5 +507,13 @@ public class GameModel {
 
     public void setExperiences(List<ModelExperience> experiences) {
         this.experiences = experiences;
+    }
+
+    public List<Challenge> getChallenges() {
+        return challenges;
+    }
+
+    public void setChallenges(List<Challenge> challenges) {
+        this.challenges = challenges;
     }
 }
