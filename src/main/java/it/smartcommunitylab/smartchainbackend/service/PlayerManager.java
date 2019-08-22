@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 
 import it.smartcommunitylab.smartchainbackend.bean.Action;
 import it.smartcommunitylab.smartchainbackend.bean.CertificationActionDTO;
+import it.smartcommunitylab.smartchainbackend.bean.ConsumptionDTO;
 import it.smartcommunitylab.smartchainbackend.bean.Experience;
 import it.smartcommunitylab.smartchainbackend.bean.GameRewardDTO;
 import it.smartcommunitylab.smartchainbackend.bean.PersonageDTO;
@@ -25,6 +26,7 @@ import it.smartcommunitylab.smartchainbackend.model.GameModel.Personage;
 import it.smartcommunitylab.smartchainbackend.model.PlayerProfile;
 import it.smartcommunitylab.smartchainbackend.model.Subscription;
 import it.smartcommunitylab.smartchainbackend.model.Subscription.CompositeKey;
+import it.smartcommunitylab.smartchainbackend.model.Subscription.Consumption;
 import it.smartcommunitylab.smartchainbackend.repository.SubscriptionRepository;
 import it.smartcommunitylab.smartchainbackend.service.GEHelper.RankingType;
 import it.smartcommunitylab.smartchainbackend.service.Rankings.Ranking;
@@ -191,6 +193,11 @@ public class PlayerManager {
         GamificationPersonage gamificationPersonage =
                 new GamificationPersonage(gamificationId, personage, personageCost);
         gamificationEngineHelper.consumePersonage(playerId, gamificationPersonage);
+
+        Subscription subscription =
+                subscriptionRepo.findById(new CompositeKey(gameModelId, playerId)).get();
+        subscription.getConsumedPersonages().add(new Consumption(personage.getId()));
+        subscriptionRepo.save(subscription);
         logger.info("GameModel {} Player {} consumes character {} (id: {})", gameModelId, playerId,
                 modelPersonage.getName(), modelPersonage.getPersonageId());
     }
@@ -209,6 +216,11 @@ public class PlayerManager {
         Cost cost = modelReward.getCost();
         GamificationReward gamificationReward = new GamificationReward(gamificationId, cost);
         gamificationEngineHelper.consumeReward(playerId, gamificationReward);
+
+        Subscription subscription =
+                subscriptionRepo.findById(new CompositeKey(gameModelId, playerId)).get();
+        subscription.getConsumedRewards().add(new Consumption(reward.getId()));
+        subscriptionRepo.save(subscription);
         logger.info("GameModel {} Player {} consumes reward {} (id: {})", gameModelId, playerId,
                 modelReward.getName(), modelReward.getRewardId());
     }
@@ -245,6 +257,11 @@ public class PlayerManager {
                             .add(new PlayerExperience(experience, s.getCompletedCertifications()));
                 }
             }
+            profile.setConsumedPersonages(s.getConsumedPersonages().stream()
+                    .map(c -> new ConsumptionDTO(c)).collect(Collectors.toList()));
+            
+            profile.setConsumedRewards(s.getConsumedRewards().stream()
+                    .map(r -> new ConsumptionDTO(r)).collect(Collectors.toList()));
         });
 
         return profile;

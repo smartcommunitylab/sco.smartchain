@@ -5,6 +5,7 @@ import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonView;
 
+import it.smartcommunitylab.smartchainbackend.bean.ConsumptionDTO;
 import it.smartcommunitylab.smartchainbackend.bean.PlayerExperience;
 import it.smartcommunitylab.smartchainbackend.controller.JsonVisibility;
 import it.smartcommunitylab.smartchainbackend.model.GameModel.ModelAction;
@@ -36,6 +37,11 @@ public class PlayerProfile {
     @JsonView(JsonVisibility.Public.class)
     private List<PlayerExperience> startedExperiences = new ArrayList<>();
 
+    @JsonView(JsonVisibility.Public.class)
+    private List<ConsumptionDTO> consumedPersonages = new ArrayList<>();
+
+    @JsonView(JsonVisibility.Public.class)
+    private List<ConsumptionDTO> consumedRewards = new ArrayList<>();
 
     public String getPlayerId() {
         return playerId;
@@ -115,6 +121,22 @@ public class PlayerProfile {
 
     public void setStartedExperiences(List<PlayerExperience> startedExperiences) {
         this.startedExperiences = startedExperiences;
+    }
+
+    public List<ConsumptionDTO> getConsumedPersonages() {
+        return consumedPersonages;
+    }
+
+    public void setConsumedPersonages(List<ConsumptionDTO> consumedPersonages) {
+        this.consumedPersonages = consumedPersonages;
+    }
+
+    public List<ConsumptionDTO> getConsumedRewards() {
+        return consumedRewards;
+    }
+
+    public void setConsumedRewards(List<ConsumptionDTO> consumedRewards) {
+        this.consumedRewards = consumedRewards;
     }
 
 }
