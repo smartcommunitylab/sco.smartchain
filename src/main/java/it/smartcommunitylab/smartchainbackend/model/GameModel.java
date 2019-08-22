@@ -96,6 +96,9 @@ public class GameModel {
         @ApiModelProperty(hidden = true)
         private String gamificationExperienceName;
 
+        @JsonView(JsonVisibility.Public.class)
+        private Revenue revenueScore;
+
 
         public CertificationAction getCertificationAction(String certificationId) {
             return certificationActions.stream()
@@ -171,6 +174,16 @@ public class GameModel {
             return completedCertifications.containsAll(certificationIds);
         }
 
+
+        public Revenue getRevenueScore() {
+            return revenueScore;
+        }
+
+
+        public void setRevenueScore(Revenue revenueScore) {
+            this.revenueScore = revenueScore;
+        }
+
     }
 
     public static class CertificationAction {
@@ -223,6 +236,9 @@ public class GameModel {
         @ApiModelProperty(hidden = true)
         private String gamificationActionName;
 
+        @JsonView(JsonVisibility.Public.class)
+        private Revenue revenueScore;
+
         public String getName() {
             return name;
         }
@@ -264,6 +280,49 @@ public class GameModel {
         }
     }
 
+    public static class Revenue {
+        @JsonView(JsonVisibility.Public.class)
+        private double territoryScore;
+        @JsonView(JsonVisibility.Public.class)
+        private double cultureScore;
+        @JsonView(JsonVisibility.Public.class)
+        private double sportScore;
+
+        public Revenue() {
+        }
+
+        public Revenue(double territory, double culture, double sport) {
+            this.territoryScore = territory;
+            this.cultureScore = culture;
+            this.sportScore = sport;
+        }
+
+        public double getTerritoryScore() {
+            return territoryScore;
+        }
+
+        public void setTerritoryScore(double territoryScore) {
+            this.territoryScore = territoryScore;
+        }
+
+        public double getCultureScore() {
+            return cultureScore;
+        }
+
+        public void setCultureScore(double cultureScore) {
+            this.cultureScore = cultureScore;
+        }
+
+        public double getSportScore() {
+            return sportScore;
+        }
+
+        public void setSportScore(double sportScore) {
+            this.sportScore = sportScore;
+        }
+
+
+    }
 
     public static class ModelReward {
         @JsonView(JsonVisibility.Public.class)
