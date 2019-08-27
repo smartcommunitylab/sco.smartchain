@@ -14,8 +14,11 @@ import it.smartcommunitylab.smartchainbackend.bean.CertificationActionDTO;
 import it.smartcommunitylab.smartchainbackend.bean.ConsumptionDTO;
 import it.smartcommunitylab.smartchainbackend.bean.Experience;
 import it.smartcommunitylab.smartchainbackend.bean.GameRewardDTO;
+import it.smartcommunitylab.smartchainbackend.bean.GamificationPlayerProfile;
 import it.smartcommunitylab.smartchainbackend.bean.PersonageDTO;
 import it.smartcommunitylab.smartchainbackend.bean.PlayerExperience;
+import it.smartcommunitylab.smartchainbackend.bean.UnusablePersonage;
+import it.smartcommunitylab.smartchainbackend.bean.UnusableReward;
 import it.smartcommunitylab.smartchainbackend.model.Cost;
 import it.smartcommunitylab.smartchainbackend.model.GameModel;
 import it.smartcommunitylab.smartchainbackend.model.GameModel.CertificationAction;
@@ -228,17 +231,34 @@ public class PlayerManager {
     public PlayerProfile getProfile(String playerId, String gameModelId) {
         final GameModel model = gameModelManager.getModel(gameModelId);
         final String gamificationId = model.getGamificationId();
+        final GamificationPlayerProfile gamificationProfile = gamificationEngineHelper.getPlayerProfile(playerId,
+                gameModelId,
+                gamificationId);
+
         PlayerProfile profile =
-                gamificationEngineHelper.getPlayerProfile(playerId, gameModelId, gamificationId);
+                new PlayerProfile(gameModelId, gamificationProfile);
 
         List<Personage> personages = gameModelManager.getPersonages(gameModelId);
         List<ModelReward> rewards = gameModelManager.getRewards(gameModelId);
         
-        List<Personage> usablePersonages = usablePersonages(personages, profile);
-        List<ModelReward> usableRewards = usableRewards(rewards, profile);
+        List<Personage> usablePersonages = usablePersonages(personages, gamificationProfile);
+        List<ModelReward> usableRewards = usableRewards(rewards, gamificationProfile);
 
         profile.setUsablePersonages(usablePersonages);
         profile.setUsableRewards(usableRewards);
+
+        List<Personage> unusablePersonageModels =
+                unusablePersonages(personages, profile.getUsablePersonages());
+        List<ModelReward> unusableRewardModels =
+                unusableRewards(rewards, profile.getUsableRewards());
+
+        List<UnusablePersonage> unusablePersonages =
+                addPersonageMissingScore(unusablePersonageModels, gamificationProfile);
+        List<UnusableReward> unusableRewards =
+                addRewardMissingScore(unusableRewardModels, gamificationProfile);
+
+        profile.setUnusablePersonages(unusablePersonages);
+        profile.setUnusableRewards(unusableRewards);
 
         Optional<Subscription> subscription =
                 subscriptionRepo.findById(new CompositeKey(gameModelId, playerId));
@@ -267,6 +287,56 @@ public class PlayerManager {
         return profile;
     }
 
+    private List<UnusablePersonage> addPersonageMissingScore(List<Personage> unusablePersonages,
+            GamificationPlayerProfile profile) {
+        final double personageTerritoryScore = profile.getPersonageTerritoryScore();
+        final double personageCultureScore = profile.getPersonageCultureScore();
+        final double personageSportScore = profile.getPersonageSportScore();
+
+        return unusablePersonages.stream().map(p -> {
+            final double missingTerritoryScore = p.getCost().getTerritoryScore() - personageTerritoryScore;
+            final double missingCultureScore = p.getCost().getCultureScore() - personageCultureScore;
+            final double missingSportScore = p.getCost().getSportScore() - personageSportScore;
+            UnusablePersonage change = new UnusablePersonage(p);
+            change.setMissingScore(new Cost(missingTerritoryScore > 0 ? missingTerritoryScore : 0,
+                    missingCultureScore > 0 ? missingCultureScore : 0,
+                    missingSportScore > 0 ? missingSportScore : 0));
+            return change;
+        }).collect(Collectors.toList());
+    }
+
+    private List<UnusableReward> addRewardMissingScore(List<ModelReward> unusableRewards,
+            GamificationPlayerProfile profile) {
+        final double rewardTerritoryScore = profile.getRewardTerritoryScore();
+        final double rewardCultureScore = profile.getRewardCultureScore();
+        final double rewardSportScore = profile.getRewardSportScore();
+
+        return unusableRewards.stream().map(p -> {
+            final double missingTerritoryScore =
+                    p.getCost().getTerritoryScore() - rewardTerritoryScore;
+            final double missingCultureScore =
+                    p.getCost().getCultureScore() - rewardCultureScore;
+            final double missingSportScore = p.getCost().getSportScore() - rewardSportScore;
+            UnusableReward change = new UnusableReward(p);
+            change.setMissingScore(new Cost(missingTerritoryScore > 0 ? missingTerritoryScore : 0,
+                    missingCultureScore > 0 ? missingCultureScore : 0,
+                    missingSportScore > 0 ? missingSportScore : 0));
+            return change;
+        }).collect(Collectors.toList());
+    }
+
+    private List<Personage> unusablePersonages(List<Personage> personages,
+            List<Personage> usablePersonages) {
+        return personages.stream().filter(p -> !usablePersonages.contains(p))
+                .collect(Collectors.toList());
+    }
+
+    private List<ModelReward> unusableRewards(List<ModelReward> rewards,
+            List<ModelReward> usableRewards) {
+        return rewards.stream().filter(p -> !usableRewards.contains(p))
+                .collect(Collectors.toList());
+    }
+
     public Rankings getRankings(String playerId, String gameModelId) {
         final String gamificationId = gameModelManager.getGamificationId(gameModelId);
         final Ranking territoryRanking = gamificationEngineHelper.getRanking(gamificationId,
@@ -286,10 +356,11 @@ public class PlayerManager {
                 .collect(Collectors.toList());
     }
 
-    private List<Personage> usablePersonages(List<Personage> personages, PlayerProfile profile) {
-        final double territoryScore = profile.getTerritoryScore();
-        final double cultureScore = profile.getCultureScore();
-        final double sportscore = profile.getSportScore();
+    private List<Personage> usablePersonages(List<Personage> personages,
+            GamificationPlayerProfile profile) {
+        final double territoryScore = profile.getPersonageTerritoryScore();
+        final double cultureScore = profile.getPersonageCultureScore();
+        final double sportscore = profile.getPersonageSportScore();
         return personages.stream()
                 .filter(p -> p.getCost().getCultureScore() <= cultureScore
                         && p.getCost().getTerritoryScore() <= territoryScore
@@ -297,10 +368,11 @@ public class PlayerManager {
                 .collect(Collectors.toList());
     }
 
-    private List<ModelReward> usableRewards(List<ModelReward> rewards, PlayerProfile profile) {
-        final double territoryScore = profile.getTerritoryScore();
-        final double cultureScore = profile.getCultureScore();
-        final double sportscore = profile.getSportScore();
+    private List<ModelReward> usableRewards(List<ModelReward> rewards,
+            GamificationPlayerProfile profile) {
+        final double territoryScore = profile.getRewardTerritoryScore();
+        final double cultureScore = profile.getRewardCultureScore();
+        final double sportscore = profile.getRewardSportScore();
         return rewards.stream()
                 .filter(p -> p.getCost().getCultureScore() <= cultureScore
                         && p.getCost().getTerritoryScore() <= territoryScore

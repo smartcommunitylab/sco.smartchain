@@ -26,9 +26,9 @@ import it.smartcommunitylab.model.ext.GameConcept;
 import it.smartcommunitylab.model.ext.PointConcept;
 import it.smartcommunitylab.smartchainbackend.bean.Action;
 import it.smartcommunitylab.smartchainbackend.bean.Experience;
+import it.smartcommunitylab.smartchainbackend.bean.GamificationPlayerProfile;
 import it.smartcommunitylab.smartchainbackend.bean.Player;
 import it.smartcommunitylab.smartchainbackend.config.GEProps;
-import it.smartcommunitylab.smartchainbackend.model.PlayerProfile;
 import it.smartcommunitylab.smartchainbackend.service.Rankings.Position;
 import it.smartcommunitylab.smartchainbackend.service.Rankings.Ranking;
 
@@ -42,9 +42,17 @@ public class GEHelper {
     private static final String consumePersonageAction = "consume-character";
     private static final String consumeRewardAction = "consume-reward";
 
-    private static final String territoryScoreName = "total_territory";
-    private static final String cultureScoreName = "total_culture";
-    private static final String sportScoreName = "total_sport";
+    private static final String totalTerritoryScoreName = "total_territory";
+    private static final String totalCultureScoreName = "total_culture";
+    private static final String totalSportScoreName = "total_sport";
+
+    private static final String personageTerritoryScoreName = "character_territory";
+    private static final String personageCultureScoreName = "character_culture";
+    private static final String personageSportScoreName = "character_sport";
+
+    private static final String rewardTerritoryScoreName = "reward_territory";
+    private static final String rewardCultureScoreName = "reward_culture";
+    private static final String rewardSportScoreName = "reward_sport";
 
     private static final String territoryDailyClassificationId = "daily classification territory";
     private static final String territoryWeeklyClassificationId = "weekly classification territory";
@@ -128,7 +136,7 @@ public class GEHelper {
         }
     }
 
-    public PlayerProfile getPlayerProfile(String playerId, String gameModelId,
+    public GamificationPlayerProfile getPlayerProfile(String playerId, String gameModelId,
             String gamificationId) {
         PlayerStateDTO state = null;
         try {
@@ -137,12 +145,21 @@ public class GEHelper {
             logger.error("Exception calling gamification-engine API");
             throw new GEHelperException(e);
         }
-        PlayerProfile profile = new PlayerProfile();
+        GamificationPlayerProfile profile = new GamificationPlayerProfile();
         profile.setPlayerId(playerId);
-        profile.setGameId(gameModelId);
-        profile.setTerritoryScore(extractScore(territoryScoreName, state));
-        profile.setCultureScore(extractScore(cultureScoreName, state));
-        profile.setSportScore(extractScore(sportScoreName, state));
+        profile.setGamificationId(gamificationId);
+        profile.setTotalTerritoryScore(extractScore(totalTerritoryScoreName, state));
+        profile.setTotalCultureScore(extractScore(totalCultureScoreName, state));
+        profile.setTotalSportScore(extractScore(totalSportScoreName, state));
+
+        profile.setPersonageTerritoryScore(extractScore(personageTerritoryScoreName, state));
+        profile.setPersonageCultureScore(extractScore(personageCultureScoreName, state));
+        profile.setPersonageSportScore(extractScore(personageSportScoreName, state));
+
+        profile.setRewardTerritoryScore(extractScore(rewardTerritoryScoreName, state));
+        profile.setRewardCultureScore(extractScore(rewardCultureScoreName, state));
+        profile.setRewardSportScore(extractScore(rewardSportScoreName, state));
+
         return profile;
     }
 
