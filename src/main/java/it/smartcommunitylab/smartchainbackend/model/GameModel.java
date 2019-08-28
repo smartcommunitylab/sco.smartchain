@@ -90,6 +90,9 @@ public class GameModel {
         private String iconUrl;
 
         @JsonView(JsonVisibility.Public.class)
+        private String executionUrl;
+
+        @JsonView(JsonVisibility.Public.class)
         private List<CertificationAction> certificationActions = new ArrayList<>();
 
         @JsonView(JsonVisibility.Internal.class)
@@ -184,6 +187,16 @@ public class GameModel {
             this.revenueScore = revenueScore;
         }
 
+
+        public String getExecutionUrl() {
+            return executionUrl;
+        }
+
+
+        public void setExecutionUrl(String executionUrl) {
+            this.executionUrl = executionUrl;
+        }
+
     }
 
     public static class CertificationAction {
@@ -193,6 +206,9 @@ public class GameModel {
         private String name;
         @JsonView(JsonVisibility.Public.class)
         private String description;
+
+        @JsonView(JsonVisibility.Public.class)
+        private String executionUrl;
 
         public String getCertificationId() {
             return certificationId;
@@ -217,6 +233,14 @@ public class GameModel {
         public void setDescription(String description) {
             this.description = description;
         }
+
+        public String getExecutionUrl() {
+            return executionUrl;
+        }
+
+        public void setExecutionUrl(String executionUrl) {
+            this.executionUrl = executionUrl;
+        }
     }
 
     public static class ModelAction {
@@ -231,6 +255,9 @@ public class GameModel {
 
         @JsonView(JsonVisibility.Public.class)
         private String iconUrl;
+
+        @JsonView(JsonVisibility.Public.class)
+        private String executionUrl;
 
         @JsonView(JsonVisibility.Internal.class)
         @ApiModelProperty(hidden = true)
@@ -277,6 +304,22 @@ public class GameModel {
 
         public void setIconUrl(String iconUrl) {
             this.iconUrl = iconUrl;
+        }
+
+        public String getExecutionUrl() {
+            return executionUrl;
+        }
+
+        public void setExecutionUrl(String executionUrl) {
+            this.executionUrl = executionUrl;
+        }
+
+        public Revenue getRevenueScore() {
+            return revenueScore;
+        }
+
+        public void setRevenueScore(Revenue revenueScore) {
+            this.revenueScore = revenueScore;
         }
     }
 
