@@ -9,6 +9,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import it.smartcommunitylab.smartchainbackend.bean.GameRewardDTO;
@@ -41,6 +42,9 @@ public class GameModelManager {
 
     @Autowired
     private SubscriptionRepository subscriptionRepo;
+
+    @Value("${executionUrlPath}")
+    private String executionUrlPath;
 
 
     public GameModel saveGameModel(GameModel gameModel) {
@@ -99,14 +103,22 @@ public class GameModelManager {
     }
 
     public List<GameModel> readGameModels() {
-        return gameModelRepo.findAll();
+        List<GameModel> models = gameModelRepo.findAll();
+        models.forEach(m -> {
+            m = setExecutionUrls(m);
+        });
+        return models;
     }
 
     public List<GameModel> readGameModels(String playerId) {
          List<Subscription> subscriptions = subscriptionRepo.findByIdPlayerId(playerId);
-        return subscriptions.stream()
+        List<GameModel> models = subscriptions.stream()
                 .map(sub -> gameModelRepo.findById(sub.getId().getGameId()).get())
                 .collect(Collectors.toList());
+        models.forEach(m -> {
+            m = setExecutionUrls(m);
+        });
+        return models;
     }
 
 
@@ -208,10 +220,70 @@ public class GameModelManager {
     public GameModel getModel(String gameModelId) {
         Optional<GameModel> gameModel = gameModelRepo.findById(gameModelId);
         if (gameModel.isPresent()) {
-            return gameModel.get();
+            GameModel model = gameModel.get();
+            model = setExecutionUrls(model);
+            return model;
         } else {
             throw new IllegalArgumentException("gameModel not exist");
         }
+    }
+
+    private GameModel setExecutionUrls(GameModel model) {
+        model = setActionExecutionUrls(model);
+        model = setExperienceExecutionUrls(model);
+        model = setCertificationExecutionUrls(model);
+        return model;
+    }
+
+    private GameModel setCertificationExecutionUrls(GameModel model) {
+      model.getExperiences().forEach(e -> e.getCertificationActions().forEach(c -> {
+            c.setExecutionUrl(generateCertificationExecutionUrl(model, e, c));
+        }));
+
+        return model;
+    }
+
+
+
+    private GameModel setExperienceExecutionUrls(GameModel model) {
+        model.getExperiences().forEach(e -> {
+            e.setExecutionUrl(generateExperienceExecutionUrl(model, e));
+        });
+        return model;
+    }
+
+    private GameModel setActionExecutionUrls(GameModel model) {
+        model.getActions().forEach(a -> {
+            a.setExecutionUrl(generateActionExecutionUrl(model, a));
+        });
+        return model;
+    }
+
+    private String generateActionExecutionUrl(GameModel model, ModelAction a) {
+        if (StringUtils.isBlank(executionUrlPath)) {
+            logger.warn("executionUrlPath not configured in application.properties");
+            return "";
+        }
+        return String.format("%s/action/%s/%s", executionUrlPath, model.getId(), a.getActionId());
+    }
+
+    private String generateExperienceExecutionUrl(GameModel model, ModelExperience e) {
+        if (StringUtils.isBlank(executionUrlPath)) {
+            logger.warn("executionUrlPath not configured in application.properties");
+            return "";
+        }
+        return String.format("%s/experience/%s/%s", executionUrlPath, model.getId(),
+                e.getExperienceId());
+    }
+
+    private String generateCertificationExecutionUrl(GameModel model, ModelExperience e,
+            CertificationAction c) {
+        if (StringUtils.isBlank(executionUrlPath)) {
+            logger.warn("executionUrlPath not configured in application.properties");
+            return "";
+        }
+        return String.format("%s/certification/%s/%s/%s", executionUrlPath,
+                model.getId(), e.getExperienceId(), c.getCertificationId());
     }
 
     public boolean isSubscribed(String playerId, String gameModelId) {

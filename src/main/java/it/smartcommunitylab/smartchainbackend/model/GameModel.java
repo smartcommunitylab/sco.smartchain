@@ -148,11 +148,17 @@ public class GameModel {
         private String iconUrl;
 
         @JsonView(JsonVisibility.Public.class)
+        private String executionUrl;
+
+        @JsonView(JsonVisibility.Public.class)
         private List<CertificationAction> certificationActions = new ArrayList<>();
 
         @JsonView(JsonVisibility.Internal.class)
         @ApiModelProperty(hidden = true)
         private String gamificationExperienceName;
+
+        @JsonView(JsonVisibility.Public.class)
+        private Revenue revenueScore;
 
 
         public CertificationAction getCertificationAction(String certificationId) {
@@ -229,6 +235,26 @@ public class GameModel {
             return completedCertifications.containsAll(certificationIds);
         }
 
+
+        public Revenue getRevenueScore() {
+            return revenueScore;
+        }
+
+
+        public void setRevenueScore(Revenue revenueScore) {
+            this.revenueScore = revenueScore;
+        }
+
+
+        public String getExecutionUrl() {
+            return executionUrl;
+        }
+
+
+        public void setExecutionUrl(String executionUrl) {
+            this.executionUrl = executionUrl;
+        }
+
     }
 
     public static class CertificationAction {
@@ -238,6 +264,9 @@ public class GameModel {
         private String name;
         @JsonView(JsonVisibility.Public.class)
         private String description;
+
+        @JsonView(JsonVisibility.Public.class)
+        private String executionUrl;
 
         public String getCertificationId() {
             return certificationId;
@@ -262,6 +291,14 @@ public class GameModel {
         public void setDescription(String description) {
             this.description = description;
         }
+
+        public String getExecutionUrl() {
+            return executionUrl;
+        }
+
+        public void setExecutionUrl(String executionUrl) {
+            this.executionUrl = executionUrl;
+        }
     }
 
     public static class ModelAction {
@@ -277,9 +314,15 @@ public class GameModel {
         @JsonView(JsonVisibility.Public.class)
         private String iconUrl;
 
+        @JsonView(JsonVisibility.Public.class)
+        private String executionUrl;
+
         @JsonView(JsonVisibility.Internal.class)
         @ApiModelProperty(hidden = true)
         private String gamificationActionName;
+
+        @JsonView(JsonVisibility.Public.class)
+        private Revenue revenueScore;
 
         public String getName() {
             return name;
@@ -320,8 +363,67 @@ public class GameModel {
         public void setIconUrl(String iconUrl) {
             this.iconUrl = iconUrl;
         }
+
+        public String getExecutionUrl() {
+            return executionUrl;
+        }
+
+        public void setExecutionUrl(String executionUrl) {
+            this.executionUrl = executionUrl;
+        }
+
+        public Revenue getRevenueScore() {
+            return revenueScore;
+        }
+
+        public void setRevenueScore(Revenue revenueScore) {
+            this.revenueScore = revenueScore;
+        }
     }
 
+    public static class Revenue {
+        @JsonView(JsonVisibility.Public.class)
+        private double territoryScore;
+        @JsonView(JsonVisibility.Public.class)
+        private double cultureScore;
+        @JsonView(JsonVisibility.Public.class)
+        private double sportScore;
+
+        public Revenue() {
+        }
+
+        public Revenue(double territory, double culture, double sport) {
+            this.territoryScore = territory;
+            this.cultureScore = culture;
+            this.sportScore = sport;
+        }
+
+        public double getTerritoryScore() {
+            return territoryScore;
+        }
+
+        public void setTerritoryScore(double territoryScore) {
+            this.territoryScore = territoryScore;
+        }
+
+        public double getCultureScore() {
+            return cultureScore;
+        }
+
+        public void setCultureScore(double cultureScore) {
+            this.cultureScore = cultureScore;
+        }
+
+        public double getSportScore() {
+            return sportScore;
+        }
+
+        public void setSportScore(double sportScore) {
+            this.sportScore = sportScore;
+        }
+
+
+    }
 
     public static class ModelReward {
         @JsonView(JsonVisibility.Public.class)

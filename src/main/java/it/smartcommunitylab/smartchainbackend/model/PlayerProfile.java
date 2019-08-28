@@ -5,7 +5,11 @@ import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonView;
 
+import it.smartcommunitylab.smartchainbackend.bean.ConsumptionDTO;
+import it.smartcommunitylab.smartchainbackend.bean.GamificationPlayerProfile;
 import it.smartcommunitylab.smartchainbackend.bean.PlayerExperience;
+import it.smartcommunitylab.smartchainbackend.bean.UnusablePersonage;
+import it.smartcommunitylab.smartchainbackend.bean.UnusableReward;
 import it.smartcommunitylab.smartchainbackend.controller.JsonVisibility;
 import it.smartcommunitylab.smartchainbackend.model.GameModel.ModelAction;
 import it.smartcommunitylab.smartchainbackend.model.GameModel.ModelReward;
@@ -36,6 +40,28 @@ public class PlayerProfile {
     @JsonView(JsonVisibility.Public.class)
     private List<PlayerExperience> startedExperiences = new ArrayList<>();
 
+    @JsonView(JsonVisibility.Public.class)
+    private List<ConsumptionDTO> consumedPersonages = new ArrayList<>();
+    @JsonView(JsonVisibility.Public.class)
+    private List<ConsumptionDTO> consumedRewards = new ArrayList<>();
+
+    @JsonView(JsonVisibility.Public.class)
+    private List<UnusablePersonage> unusablePersonages = new ArrayList<>();
+
+    @JsonView(JsonVisibility.Public.class)
+    private List<UnusableReward> unusableRewards = new ArrayList<>();
+
+    public PlayerProfile() {
+
+    }
+
+    public PlayerProfile(String gameModelId, GamificationPlayerProfile gamificationProfile) {
+        gameId = gameModelId;
+        playerId = gamificationProfile.getPlayerId();
+        territoryScore = gamificationProfile.getTotalTerritoryScore();
+        cultureScore = gamificationProfile.getTotalCultureScore();
+        sportScore = gamificationProfile.getTotalSportScore();
+    }
 
     public String getPlayerId() {
         return playerId;
@@ -115,6 +141,38 @@ public class PlayerProfile {
 
     public void setStartedExperiences(List<PlayerExperience> startedExperiences) {
         this.startedExperiences = startedExperiences;
+    }
+
+    public List<ConsumptionDTO> getConsumedPersonages() {
+        return consumedPersonages;
+    }
+
+    public void setConsumedPersonages(List<ConsumptionDTO> consumedPersonages) {
+        this.consumedPersonages = consumedPersonages;
+    }
+
+    public List<ConsumptionDTO> getConsumedRewards() {
+        return consumedRewards;
+    }
+
+    public void setConsumedRewards(List<ConsumptionDTO> consumedRewards) {
+        this.consumedRewards = consumedRewards;
+    }
+
+    public List<UnusablePersonage> getUnusablePersonages() {
+        return unusablePersonages;
+    }
+
+    public void setUnusablePersonages(List<UnusablePersonage> unusablePersonages) {
+        this.unusablePersonages = unusablePersonages;
+    }
+
+    public List<UnusableReward> getUnusableRewards() {
+        return unusableRewards;
+    }
+
+    public void setUnusableRewards(List<UnusableReward> unusableRewards) {
+        this.unusableRewards = unusableRewards;
     }
 
 }
