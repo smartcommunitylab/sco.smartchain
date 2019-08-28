@@ -174,7 +174,7 @@ public class GEHelper {
     }
 
     private Position getPosition(String gamificationId, String playerId, String classificationId) {
-        Position position = new Position(0, 0);
+        Position position = new Position(1, 0);
         try {
             position = getPosition(playerId,
                     getBoard(gamificationId, classificationId));
@@ -187,14 +187,21 @@ public class GEHelper {
 
     private Position getPosition(String playerId, ClassificationBoard board) {
         final List<ClassificationPosition> positions = board.getBoard();
-        int position = 1;
+        int position = 0, nextPosition = 1;
+        Double lastScore = null;
+        boolean sameScore = false;
         for (ClassificationPosition p : positions) {
+            sameScore = lastScore != null && lastScore.equals(p.getScore());
+            if (!sameScore) {
+                position = nextPosition;
+            }
+            lastScore = p.getScore();
+            nextPosition++;
             if (p.getPlayerId().equals(playerId)) {
                 return new Position(position, p.getScore());
             }
-            position++;
         }
-        return new Position(0, 0);
+        return new Position(1, 0);
 
     }
     private ClassificationBoard getBoard(String gamificationId, String classificationId) {
