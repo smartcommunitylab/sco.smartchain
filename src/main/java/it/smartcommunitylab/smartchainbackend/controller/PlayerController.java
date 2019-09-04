@@ -1,5 +1,7 @@
 package it.smartcommunitylab.smartchainbackend.controller;
 
+import java.util.List;
+
 import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,6 +19,7 @@ import it.smartcommunitylab.smartchainbackend.bean.Experience;
 import it.smartcommunitylab.smartchainbackend.bean.GameRewardDTO;
 import it.smartcommunitylab.smartchainbackend.bean.PersonageDTO;
 import it.smartcommunitylab.smartchainbackend.bean.Player;
+import it.smartcommunitylab.smartchainbackend.bean.PlayerChallenge;
 import it.smartcommunitylab.smartchainbackend.model.PlayerProfile;
 import it.smartcommunitylab.smartchainbackend.service.AuthService;
 import it.smartcommunitylab.smartchainbackend.service.GameModelManager;
@@ -53,6 +56,13 @@ public class PlayerController {
             @PathVariable String playerId, HttpServletRequest request) {
         authService.check(request, playerId);
         return playerManager.getProfile(playerId, gameModelId);
+    }
+
+    @GetMapping("api/challenge/{gameModelId}/{playerId}")
+    public List<PlayerChallenge> getChallenges(@PathVariable String gameModelId,
+            @PathVariable String playerId, HttpServletRequest request) {
+        authService.check(request, playerId);
+        return playerManager.challenges(gameModelId, playerId);
     }
 
     @GetMapping("api/ranking/{gameModelId}/{playerId}")

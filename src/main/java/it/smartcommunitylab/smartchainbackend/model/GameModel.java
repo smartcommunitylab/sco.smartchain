@@ -29,7 +29,7 @@ public class GameModel {
     private List<ModelAction> actions = new ArrayList<>();
     @JsonView(JsonVisibility.Public.class)
     private List<ModelExperience> experiences = new ArrayList<>();
-
+    @JsonView(JsonVisibility.Public.class)
     private List<Challenge> challenges = new ArrayList<>();
 
 

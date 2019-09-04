@@ -16,6 +16,7 @@ import it.smartcommunitylab.smartchainbackend.bean.Experience;
 import it.smartcommunitylab.smartchainbackend.bean.GameRewardDTO;
 import it.smartcommunitylab.smartchainbackend.bean.GamificationPlayerProfile;
 import it.smartcommunitylab.smartchainbackend.bean.PersonageDTO;
+import it.smartcommunitylab.smartchainbackend.bean.PlayerChallenge;
 import it.smartcommunitylab.smartchainbackend.bean.PlayerExperience;
 import it.smartcommunitylab.smartchainbackend.bean.UnusablePersonage;
 import it.smartcommunitylab.smartchainbackend.bean.UnusableReward;
@@ -70,6 +71,16 @@ public class PlayerManager {
         logger.info("GameModel {} Player {} completed action {} (id: {})", gameModelId, playerId,
                 modelAction.getName(),
                 modelAction.getActionId());
+    }
+
+    public List<PlayerChallenge> challenges(String gameModelId, String playerId) {
+        boolean isSubscribed = gameModelManager.isSubscribed(playerId, gameModelId);
+        if (!isSubscribed) {
+            throw new IllegalArgumentException(
+                    String.format("%s is not subscribed to game %s", playerId, gameModelId));
+        }
+        final GameModel model = gameModelManager.getModel(gameModelId);
+        return gamificationEngineHelper.challenges(playerId, model);
     }
 
     public void playExperience(String playerId, Experience experience) {

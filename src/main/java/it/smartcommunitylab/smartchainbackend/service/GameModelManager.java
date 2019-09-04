@@ -18,6 +18,7 @@ import it.smartcommunitylab.smartchainbackend.bean.Player;
 import it.smartcommunitylab.smartchainbackend.model.Cost;
 import it.smartcommunitylab.smartchainbackend.model.GameModel;
 import it.smartcommunitylab.smartchainbackend.model.GameModel.CertificationAction;
+import it.smartcommunitylab.smartchainbackend.model.GameModel.Challenge;
 import it.smartcommunitylab.smartchainbackend.model.GameModel.ModelAction;
 import it.smartcommunitylab.smartchainbackend.model.GameModel.ModelExperience;
 import it.smartcommunitylab.smartchainbackend.model.GameModel.ModelReward;
@@ -206,6 +207,10 @@ public class GameModelManager {
 
     public List<ModelAction> getActions(String gameModelId) {
         return getModel(gameModelId).getActions();
+    }
+
+    public List<Challenge> getChallenges(String gameModelId) {
+        return getModel(gameModelId).getChallenges();
     }
 
     public List<ModelReward> getRewards(String gameModelId) {

@@ -1,10 +1,13 @@
 package it.smartcommunitylab.smartchainbackend.service;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import javax.annotation.PostConstruct;
 
@@ -21,6 +24,7 @@ import it.smartcommunitylab.basic.api.PlayerControllerApi;
 import it.smartcommunitylab.model.ClassificationBoard;
 import it.smartcommunitylab.model.ClassificationPosition;
 import it.smartcommunitylab.model.PlayerStateDTO;
+import it.smartcommunitylab.model.ext.ChallengeConcept;
 import it.smartcommunitylab.model.ext.ExecutionDataDTO;
 import it.smartcommunitylab.model.ext.GameConcept;
 import it.smartcommunitylab.model.ext.PointConcept;
@@ -28,7 +32,9 @@ import it.smartcommunitylab.smartchainbackend.bean.Action;
 import it.smartcommunitylab.smartchainbackend.bean.Experience;
 import it.smartcommunitylab.smartchainbackend.bean.GamificationPlayerProfile;
 import it.smartcommunitylab.smartchainbackend.bean.Player;
+import it.smartcommunitylab.smartchainbackend.bean.PlayerChallenge;
 import it.smartcommunitylab.smartchainbackend.config.GEProps;
+import it.smartcommunitylab.smartchainbackend.model.GameModel;
 import it.smartcommunitylab.smartchainbackend.service.Rankings.Position;
 import it.smartcommunitylab.smartchainbackend.service.Rankings.Ranking;
 
@@ -117,8 +123,7 @@ public class GEHelper {
         playerState.setCustomData(new HashMap<>());
         playerState.getCustomData().put(componentsCustomField, subscriber.getComponents());
         try {
-            new PlayerControllerApi(apiClient).createPlayerUsingPOST1(
-                    subscriber.getGameId(),
+            new PlayerControllerApi(apiClient).createPlayerUsingPOST1(subscriber.getGameId(),
                     playerState);
         } catch (ApiException e) {
             logger.error("Exception calling gamification-engine API: {}", e.getMessage());
@@ -134,6 +139,36 @@ public class GEHelper {
             logger.error("Exception calling gamification-engine API");
             throw new GEHelperException(e);
         }
+    }
+
+    public List<PlayerChallenge> challenges(String playerId, GameModel model) {
+        PlayerStateDTO state = null;
+        final String gamificationId = model.getGamificationId();
+        try {
+            state = new PlayerControllerApi(apiClient).readStateUsingGET(gamificationId, playerId);
+        } catch (ApiException | IOException e) {
+            logger.error("Exception calling gamification-engine API");
+            throw new GEHelperException(e);
+        }
+        Set<GameConcept> challenges = challenges(state);
+        List<PlayerChallenge> result = new ArrayList<>();
+        model.getChallenges().forEach(challengeModel -> {
+            final String type = challengeModel.getGamificationType();
+            final String challengeId = challengeModel.getChallengeId();
+            result.addAll(challenges.stream().map(gc -> (ChallengeConcept) gc)
+                    .filter(p -> p.getModelName().equals(type))
+                    .map(c -> new PlayerChallenge(challengeId, c)).collect(Collectors.toList()));
+        });
+
+        return result;
+    }
+
+    private Set<GameConcept> challenges(PlayerStateDTO state) {
+        Set<GameConcept> challenges = state.getState().get("ChallengeConcept");
+        if (challenges == null) {
+            challenges = new HashSet<>();
+        }
+        return challenges;
     }
 
     public GamificationPlayerProfile getPlayerProfile(String playerId, String gameModelId,
@@ -176,8 +211,7 @@ public class GEHelper {
     private Position getPosition(String gamificationId, String playerId, String classificationId) {
         Position position = new Position(1, 0);
         try {
-            position = getPosition(playerId,
-                    getBoard(gamificationId, classificationId));
+            position = getPosition(playerId, getBoard(gamificationId, classificationId));
         } catch (GEHelperException e) {
             logger.warn("Exception reading classification board {} of gamification game {}",
                     classificationId, gamificationId);
@@ -204,6 +238,7 @@ public class GEHelper {
         return new Position(1, 0);
 
     }
+
     private ClassificationBoard getBoard(String gamificationId, String classificationId) {
         ClassificationBoard board = null;
         try {
@@ -220,8 +255,8 @@ public class GEHelper {
     private double extractScore(String scoreName, PlayerStateDTO state) {
         Set<GameConcept> scores = state.getState().get("PointConcept");
         return scores.stream().map(gc -> (PointConcept) gc)
-                .filter(p -> p.getName().equals(scoreName))
-                .findFirst().map(s -> s.getScore()).orElseThrow(() -> new IllegalArgumentException(
+                .filter(p -> p.getName().equals(scoreName)).findFirst().map(s -> s.getScore())
+                .orElseThrow(() -> new IllegalArgumentException(
                         String.format("score %s not found", scoreName)));
     }
 
@@ -288,7 +323,7 @@ public class GEHelper {
 
         return action;
     }
-    
+
 
     public static class GEHelperException extends RuntimeException {
 
@@ -309,7 +344,7 @@ public class GEHelper {
         public GEHelperException(Throwable cause) {
             super(cause);
         }
-        
+
     }
 
 }
