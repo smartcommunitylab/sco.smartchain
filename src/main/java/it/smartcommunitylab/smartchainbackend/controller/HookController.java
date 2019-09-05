@@ -46,7 +46,8 @@ public class HookController {
     }
 
     @GetMapping("hook/certification/{gameModelId}/{experienceId}/{certificationId}")
-    public void hookExperience(@PathVariable String gameModelId, @PathVariable String experienceId,
+    public void hookCertification(@PathVariable String gameModelId,
+            @PathVariable String experienceId,
             @PathVariable String certificationId, HttpServletRequest request) {
         final String playerId = aacHelper.getPlayerId(request);
         CertificationActionDTO certification = new CertificationActionDTO();
