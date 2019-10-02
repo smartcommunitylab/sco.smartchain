@@ -206,14 +206,41 @@ public class PlayerManager {
         Cost personageCost = modelPersonage.getCost();
         GamificationPersonage gamificationPersonage =
                 new GamificationPersonage(gamificationId, personage, personageCost);
+
+        boolean playerCanConsume = isPersonageConsumable(playerId, gameModelId, personageCost);
         gamificationEngineHelper.consumePersonage(playerId, gamificationPersonage);
 
-        Subscription subscription =
-                subscriptionRepo.findById(new CompositeKey(gameModelId, playerId)).get();
-        subscription.getConsumedPersonages().add(new Consumption(personage.getId()));
-        subscriptionRepo.save(subscription);
-        logger.info("GameModel {} Player {} consumes character {} (id: {})", gameModelId, playerId,
-                modelPersonage.getName(), modelPersonage.getPersonageId());
+        if (playerCanConsume) {
+            Subscription subscription =
+                    subscriptionRepo.findById(new CompositeKey(gameModelId, playerId)).get();
+            subscription.getConsumedPersonages().add(new Consumption(personage.getId()));
+            subscriptionRepo.save(subscription);
+            logger.info("GameModel {} Player {} consumes character {} (id: {})", gameModelId,
+                    playerId, modelPersonage.getName(), modelPersonage.getPersonageId());
+        }
+    }
+
+    private boolean isPersonageConsumable(String playerId, String gameModelId, Cost cost) {
+        final GameModel model = gameModelManager.getModel(gameModelId);
+        final GamificationPlayerProfile profile =
+                gamificationEngineHelper.getPlayerProfile(playerId,
+                gameModelId,
+                model.getGamificationId());
+        
+        return profile.getPersonageTerritoryScore() >= cost.getTerritoryScore()
+                && profile.getPersonageCultureScore() >= cost.getSportScore()
+                && profile.getPersonageSportScore() >= cost.getSportScore();
+    }
+
+
+    private boolean isRewardConsumable(String playerId, String gameModelId, Cost cost) {
+        final GameModel model = gameModelManager.getModel(gameModelId);
+        final GamificationPlayerProfile profile = gamificationEngineHelper
+                .getPlayerProfile(playerId, gameModelId, model.getGamificationId());
+
+        return profile.getRewardTerritoryScore() >= cost.getTerritoryScore()
+                && profile.getRewardCultureScore() >= cost.getSportScore()
+                && profile.getRewardSportScore() >= cost.getSportScore();
     }
 
     public void consumeReward(String playerId, GameRewardDTO reward) {
@@ -229,14 +256,21 @@ public class PlayerManager {
         final ModelReward modelReward = model.getReward(reward.getId());
         Cost cost = modelReward.getCost();
         GamificationReward gamificationReward = new GamificationReward(gamificationId, cost);
+        boolean playerCanConsume = isRewardConsumable(playerId, gameModelId, cost);
+
         gamificationEngineHelper.consumeReward(playerId, gamificationReward);
 
-        Subscription subscription =
-                subscriptionRepo.findById(new CompositeKey(gameModelId, playerId)).get();
-        subscription.getConsumedRewards().add(new Consumption(reward.getId()));
-        subscriptionRepo.save(subscription);
-        logger.info("GameModel {} Player {} consumes reward {} (id: {})", gameModelId, playerId,
-                modelReward.getName(), modelReward.getRewardId());
+        if (playerCanConsume) {
+            Subscription subscription =
+                    subscriptionRepo.findById(new CompositeKey(gameModelId, playerId)).get();
+            subscription.getConsumedRewards().add(new Consumption(reward.getId()));
+            subscriptionRepo.save(subscription);
+            logger.info("GameModel {} Player {} consumes reward {} (id: {})", gameModelId, playerId,
+                    modelReward.getName(), modelReward.getRewardId());
+        } else {
+            logger.info("GameModel {} Player {} tried to consume reward {} (id: {})", gameModelId,
+                    playerId, modelReward.getName(), modelReward.getRewardId());
+        }
     }
 
     public PlayerProfile getProfile(String playerId, String gameModelId) {
