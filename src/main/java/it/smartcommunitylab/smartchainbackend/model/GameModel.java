@@ -491,6 +491,9 @@ public class GameModel {
         private String iconUrl;
         @JsonView(JsonVisibility.Public.class)
         private String description;
+        @JsonView(JsonVisibility.Public.class)
+        private String benefit;
+
 
         public String getName() {
             return name;
@@ -549,6 +552,14 @@ public class GameModel {
 
         public void setDescription(String description) {
             this.description = description;
+        }
+
+        public String getBenefit() {
+            return benefit;
+        }
+
+        public void setBenefit(String benefit) {
+            this.benefit = benefit;
         }
 
     }
